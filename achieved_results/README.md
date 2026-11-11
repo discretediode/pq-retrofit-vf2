@@ -10,7 +10,7 @@ Two scenarios are measured throughout:
 1. **Hackathon server** (IPv4), TLS handshake time, with server authentication RSA-3072 in both modes
 2. **Own server** on the local network, end-to-end time including full hybrid authentication
 
-Start with **[SUMMARY.md](SUMMARY.md)** ([PDF](SUMMARY.pdf)); sections 10–13 cover the results in this folder.
+Start with **[SUMMARY.md](SUMMARY.md)** ([PDF](SUMMARY.pdf)); sections 10–13b cover the results in this folder.
 
 ## Folder layout: one folder per approach
 Each approach is self-contained: a detailed report (`.md` + `.pdf`), all raw measurements, statistics, logs and the
@@ -49,8 +49,10 @@ the clock-policy change.
 Running the classical and post-quantum halves of each hybrid step on two cores at once speeds up the client-side
 crypto 1.5–1.65x at every clock setting (parallel faster in 90–100 % of iterations). At the default clock, the
 crypto of one hybrid handshake drops from 16.0 to 10.1 ms; combined with bitmanip and min 750 MHz it's 4.7 ms.
-This is a crypto-level feasibility result; the TLS integration (sending the ML-DSA signature with the certificate,
-parallel hybrid KEM inside OpenSSL) is the next step, and end-to-end hasn't been measured yet.
+**Part 2, end-to-end:** with the ML-DSA signature moved into the TLS 1.3 Certificate message and verified on a second
+core while OpenSSL verifies ECDSA, the full hybrid connection drops from 28.19 to **24.57 ms (−12.8 %, faster in 20/20
+blocks)** at the default clock, more than halving the gap to legacy (+6.5 → +2.9 ms). The key exchange halves
+(inside OpenSSL) are still sequential.
 
 ## Files
 
@@ -102,16 +104,21 @@ Sections 1–9 refer to earlier raw data that isn't included in this folder.
 | `multicore_feasibility_stats.txt` | Statistics: best / median / p95 / worst, time saved, speed-up, share of iterations where parallel won, core usage |
 | `multicore_feasibility.log` | Run log (clock setting, build, temperature, failures) |
 | `scripts/parverify_run.sh` | Run script (needs sudo; restores the default CPU setting) |
+| `multicore_e2e_REPORT.md` / `.pdf` | **Part 2 report**: parallel hybrid authentication in the real TLS handshake (ML-DSA signature in a Certificate extension, verified on a 2nd core), legacy vs v1 vs v2 one core vs v2 two cores, 1000 runs each; security tests |
+| `multicore_e2e_raw.csv` | All 4000 end-to-end measurements: `mode,block,run,tcp_ms,handshake_ms,e2e_ms,pq_verify_ms,wait_ms` |
+| `multicore_e2e_stats.txt` | Statistics: best / percentiles / median / worst, time breakdown, paired per-block comparison, vs baseline |
+| `multicore_e2e.log` | Run log: per-block verification checks, failures (0), temperature |
+| `scripts/bench_multicore_e2e.sh` | End-to-end benchmark script (no sudo needed) |
 
 ### `tools/`: source code
 | File | What |
 |---|---|
-| `hybrid_server.c` | TLS 1.3 test server: RSA-3072 for legacy clients; ECDSA P-256 + ML-DSA-44/65 dual signature bound to the TLS exporter for hybrid clients |
-| `hybrid_client.c` | Benchmark client: pinned certificate + pinned ML-DSA key, end-to-end timing, `RAW=1` per-connection output, `TRACE=1` handshake timeline |
+| `hybrid_server.c` | TLS 1.3 test server: RSA-3072 for legacy clients; ECDSA P-256 + ML-DSA-44/65 dual signature for hybrid clients, either bound to the TLS exporter (v1) or in a TLS 1.3 Certificate extension over the hello messages (v2) |
+| `hybrid_client.c` | Benchmark client: pinned certificate + pinned ML-DSA key, end-to-end timing, `RAW=1` per-connection output, `TRACE=1` handshake timeline; options `certext` (v2) and `par` (verify ML-DSA on a second core) |
 | `pqc_client.c` | Key-exchange client for the hackathon server (IPv4/IPv6, selectable group) |
 | `sigbench.c` | Signature micro-benchmark (RSA, ECDSA, ML-DSA) |
 | `parverify.c` | Multicore feasibility test: classical and PQ halves one after another vs on two cores |
-| `analyze_1000.py`, `analyze_dyn.py`, `analyze_pair.py`, `analyze_multicore.py` | Statistics used for the reports |
+| `analyze_1000.py`, `analyze_dyn.py`, `analyze_pair.py`, `analyze_multicore.py`, `analyze_mc_e2e.py` | Statistics used for the reports |
 | `md2pdf.py` | Markdown to PDF conversion used for the PDFs |
 
 ## Method notes

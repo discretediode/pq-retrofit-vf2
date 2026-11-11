@@ -1,0 +1,27 @@
+## End-to-end time per connection (ms), own server on the LAN
+mode        n    best      p5  median    mean     p95     p99   worst
+legacy   1000   15.37   18.08   21.68   21.79   24.62   27.29   35.33
+v1       1000   20.72   22.78   28.19   28.27   31.93   34.03   40.40
+v2_seq   1000   21.07   22.72   28.68   28.60   32.19   33.72   40.87
+v2_par   1000   17.45   19.54   24.57   24.67   28.28   31.75   38.11
+
+## Breakdown, medians (ms)
+mode        TCP  TLS handshake  ML-DSA verify  wait after TLS
+legacy     1.38          18.98           0.00           0.000
+v1         1.37          19.30           4.24           0.000
+v2_seq     1.37          25.95           3.99           0.002
+v2_par     1.37          21.87           4.00           0.003
+
+## Paired per-block comparison of the median end-to-end time (same block = same conditions)
+v2_seq  vs v1     : overall  +0.49 ms ( +1.7 %); per block median  +0.43 ms, range  -3.77.. +4.95; v2_seq faster in 7/20 blocks
+v2_par  vs v2_seq : overall  -4.11 ms (-14.3 %); per block median  -4.04 ms, range  -8.63.. -0.00; v2_par faster in 20/20 blocks
+v2_par  vs v1     : overall  -3.62 ms (-12.8 %); per block median  -3.55 ms, range  -7.47.. -0.10; v2_par faster in 20/20 blocks
+v1      vs legacy : overall  +6.51 ms (+30.0 %); per block median  +6.20 ms, range  +2.44.. +7.74; v1 faster in 0/20 blocks
+v2_seq  vs legacy : overall  +7.00 ms (+32.3 %); per block median  +6.84 ms, range  +2.30.. +8.59; v2_seq faster in 0/20 blocks
+v2_par  vs legacy : overall  +2.89 ms (+13.3 %); per block median  +2.78 ms, range  -0.47.. +3.74; v2_par faster in 2/20 blocks
+
+## Against the BASELINE run (own server, default clock): legacy 21.61 ms, hybrid 27.95 ms
+legacy  median  21.68 ms ->  +0.07 ms vs baseline legacy
+v1      median  28.19 ms ->  +6.59 ms vs baseline legacy
+v2_seq  median  28.68 ms ->  +7.08 ms vs baseline legacy
+v2_par  median  24.57 ms ->  +2.97 ms vs baseline legacy

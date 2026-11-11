@@ -16,6 +16,13 @@
  *   binary            header  "PQ-Auth-Signature-Length: <n>", and the body
  *                     starts with the n raw signature bytes, then the JSON.
  *
+ * v2 ("certext"): if the ClientHello carries the PQ_AUTH_EXT extension, the server
+ * puts an ML-DSA-44 signature over SIG_PREFIX_V2 || SHA-256(ClientHello || ServerHello)
+ * into that extension of its TLS 1.3 Certificate message. The two hashed messages hold
+ * both randoms and both key shares, so the signature is bound to this handshake and
+ * can't be reused in another one. The client can then verify ML-DSA while OpenSSL
+ * verifies the ECDSA CertificateVerify, in parallel on two cores.
+ *
  * Resumed sessions (TLS 1.3 PSK with fresh (EC)DHE/ML-KEM key exchange) were
  * established by a fully authenticated handshake, so no new signature is sent;
  * the response says "PQ-Auth: resumed".
@@ -40,8 +47,83 @@
 #define EKM_LEN 32
 #define MAX_REQUEST 8192
 #define MAX_SIG 8192
+#define SIG_PREFIX_V2 "hybrid-auth-v2"
+#define PQ_AUTH_EXT 0xFE20      /* private-use extension number for the v2 signature */
+#define MAX_HELLO 8192
 
 static EVP_PKEY *mldsa44, *mldsa65;
+
+/* v2 per-connection state (the server handles one connection at a time). */
+static struct {
+    unsigned char ch[MAX_HELLO], sh[MAX_HELLO], sig[MAX_SIG];
+    size_t ch_len, sh_len, sig_len;
+    int requested, sent;
+} v2;
+
+/* Record the ClientHello and ServerHello exactly as they went over the wire. */
+static void capture_hellos(int write_p, int version, int content_type, const void *buf,
+                           size_t len, SSL *ssl, void *arg)
+{
+    const unsigned char *m = buf;
+
+    (void)version; (void)ssl; (void)arg;
+    if (content_type != SSL3_RT_HANDSHAKE || len == 0 || len > MAX_HELLO)
+        return;
+    if (!write_p && m[0] == SSL3_MT_CLIENT_HELLO && v2.ch_len == 0) {
+        memcpy(v2.ch, m, len);
+        v2.ch_len = len;
+    } else if (write_p && m[0] == SSL3_MT_SERVER_HELLO && v2.sh_len == 0) {
+        memcpy(v2.sh, m, len);
+        v2.sh_len = len;
+    }
+}
+
+static int v2_parse(SSL *s, unsigned int ext_type, unsigned int context, const unsigned char *in,
+                    size_t inlen, X509 *x, size_t chainidx, int *al, void *arg)
+{
+    (void)s; (void)ext_type; (void)in; (void)inlen; (void)x; (void)chainidx; (void)al; (void)arg;
+    if (context == SSL_EXT_CLIENT_HELLO)
+        v2.requested = 1;
+    return 1;
+}
+
+/* Add the ML-DSA-44 signature to the leaf certificate entry. */
+static int v2_add(SSL *s, unsigned int ext_type, unsigned int context, const unsigned char **out,
+                  size_t *outlen, X509 *x, size_t chainidx, int *al, void *arg)
+{
+    unsigned char msg[sizeof(SIG_PREFIX_V2) - 1 + 32], hello[2 * MAX_HELLO];
+    unsigned int hlen = 0;
+    EVP_MD_CTX *mctx;
+    int ok;
+
+    (void)s; (void)ext_type; (void)x; (void)arg;
+    if (context != SSL_EXT_TLS1_3_CERTIFICATE || chainidx != 0 || !v2.requested)
+        return 0;                                   /* don't add the extension */
+    if (v2.ch_len == 0 || v2.sh_len == 0) {
+        *al = SSL_AD_INTERNAL_ERROR;
+        return -1;
+    }
+    memcpy(hello, v2.ch, v2.ch_len);
+    memcpy(hello + v2.ch_len, v2.sh, v2.sh_len);
+    memcpy(msg, SIG_PREFIX_V2, sizeof(SIG_PREFIX_V2) - 1);
+    v2.sig_len = sizeof(v2.sig);
+    mctx = EVP_MD_CTX_new();
+    ok = EVP_Digest(hello, v2.ch_len + v2.sh_len, msg + sizeof(SIG_PREFIX_V2) - 1, &hlen,
+                    EVP_sha256(), NULL) == 1 &&
+         mctx != NULL &&
+         EVP_DigestSignInit_ex(mctx, NULL, NULL, NULL, NULL, mldsa44, NULL) == 1 &&
+         EVP_DigestSign(mctx, v2.sig, &v2.sig_len, msg, sizeof(msg)) == 1;
+    EVP_MD_CTX_free(mctx);
+    if (!ok) {
+        ERR_print_errors_fp(stderr);
+        *al = SSL_AD_INTERNAL_ERROR;
+        return -1;
+    }
+    *out = v2.sig;
+    *outlen = v2.sig_len;
+    v2.sent = 1;
+    return 1;
+}
 
 static EVP_PKEY *load_private_key(const char *dir, const char *name)
 {
@@ -111,6 +193,7 @@ static void handle(SSL *ssl)
     size_t total = 0, sig_len = 0, body_len, head_len;
     int n, nid = 0, binary, resumed;
 
+    memset(&v2, 0, sizeof(v2));
     if (SSL_accept(ssl) != 1) {
         fprintf(stderr, "TLS handshake failed\n");
         ERR_print_errors_fp(stderr);
@@ -145,7 +228,9 @@ static void handle(SSL *ssl)
 
     pq_header[0] = '\0';
     pq_status = "none";
-    if (pq_name != NULL && resumed) {
+    if (v2.sent) {
+        pq_status = "ML-DSA-44 in Certificate extension (v2)";
+    } else if (pq_name != NULL && resumed) {
         pq_status = "resumed";
         snprintf(pq_header, sizeof(pq_header), "PQ-Auth: resumed\r\n");
     } else if (pq_name != NULL && (sig_len = sign_exporter(ssl, pq_key, sig, sizeof(sig))) > 0) {
@@ -198,6 +283,13 @@ int main(int argc, char **argv)
         return 1;
     SSL_CTX_set_min_proto_version(ctx, TLS1_3_VERSION);
     SSL_CTX_set1_groups_list(ctx, "X25519MLKEM768:X25519");
+    SSL_CTX_set_msg_callback(ctx, capture_hellos);
+    if (SSL_CTX_add_custom_ext(ctx, PQ_AUTH_EXT,
+                               SSL_EXT_TLS1_3_ONLY | SSL_EXT_CLIENT_HELLO | SSL_EXT_TLS1_3_CERTIFICATE,
+                               v2_add, NULL, NULL, v2_parse, NULL) != 1) {
+        ERR_print_errors_fp(stderr);
+        return 1;
+    }
     if (!load_cert_and_key(ctx, dir, "rsa") || !load_cert_and_key(ctx, dir, "ecdsa"))
         return 1;
     if ((mldsa44 = load_private_key(dir, "mldsa44_key.pem")) == NULL ||

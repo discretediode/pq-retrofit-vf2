@@ -1,0 +1,186 @@
+start 2026-11-11T15:21:51Z governor=ondemand min=312500 temp=44.9C lib=opt
+  v1 block 1: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  v1 block 1 failures: 0
+  v2_seq block 1: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on the same th
+  v2_seq block 1 failures: 0
+  v2_par block 1: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on a worker th
+  v2_par block 1 failures: 0
+  legacy block 1: PQ signature:     none
+  legacy block 1 failures: 0
+block 1/20 done, temp 45.0 C
+  v2_seq block 2: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on the same th
+  v2_seq block 2 failures: 0
+  v2_par block 2: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on a worker th
+  v2_par block 2 failures: 0
+  legacy block 2: PQ signature:     none
+  legacy block 2 failures: 0
+  v1 block 2: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  v1 block 2 failures: 0
+block 2/20 done, temp 45.2 C
+  v2_par block 3: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on a worker th
+  v2_par block 3 failures: 0
+  legacy block 3: PQ signature:     none
+  legacy block 3 failures: 0
+  v1 block 3: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  v1 block 3 failures: 0
+  v2_seq block 3: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on the same th
+  v2_seq block 3 failures: 0
+block 3/20 done, temp 45.4 C
+  legacy block 4: PQ signature:     none
+  legacy block 4 failures: 0
+  v1 block 4: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  v1 block 4 failures: 0
+  v2_seq block 4: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on the same th
+  v2_seq block 4 failures: 0
+  v2_par block 4: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on a worker th
+  v2_par block 4 failures: 0
+block 4/20 done, temp 45.5 C
+  v1 block 5: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  v1 block 5 failures: 0
+  v2_seq block 5: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on the same th
+  v2_seq block 5 failures: 0
+  v2_par block 5: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on a worker th
+  v2_par block 5 failures: 0
+  legacy block 5: PQ signature:     none
+  legacy block 5 failures: 0
+block 5/20 done, temp 45.5 C
+  v2_seq block 6: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on the same th
+  v2_seq block 6 failures: 0
+  v2_par block 6: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on a worker th
+  v2_par block 6 failures: 0
+  legacy block 6: PQ signature:     none
+  legacy block 6 failures: 0
+  v1 block 6: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  v1 block 6 failures: 0
+block 6/20 done, temp 45.5 C
+  v2_par block 7: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on a worker th
+  v2_par block 7 failures: 0
+  legacy block 7: PQ signature:     none
+  legacy block 7 failures: 0
+  v1 block 7: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  v1 block 7 failures: 0
+  v2_seq block 7: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on the same th
+  v2_seq block 7 failures: 0
+block 7/20 done, temp 45.3 C
+  legacy block 8: PQ signature:     none
+  legacy block 8 failures: 0
+  v1 block 8: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  v1 block 8 failures: 0
+  v2_seq block 8: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on the same th
+  v2_seq block 8 failures: 0
+  v2_par block 8: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on a worker th
+  v2_par block 8 failures: 0
+block 8/20 done, temp 45.2 C
+  v1 block 9: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  v1 block 9 failures: 0
+  v2_seq block 9: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on the same th
+  v2_seq block 9 failures: 0
+  v2_par block 9: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on a worker th
+  v2_par block 9 failures: 0
+  legacy block 9: PQ signature:     none
+  legacy block 9 failures: 0
+block 9/20 done, temp 45.1 C
+  v2_seq block 10: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on the same th
+  v2_seq block 10 failures: 0
+  v2_par block 10: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on a worker th
+  v2_par block 10 failures: 0
+  legacy block 10: PQ signature:     none
+  legacy block 10 failures: 0
+  v1 block 10: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  v1 block 10 failures: 0
+block 10/20 done, temp 45.0 C
+  v2_par block 11: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on a worker th
+  v2_par block 11 failures: 0
+  legacy block 11: PQ signature:     none
+  legacy block 11 failures: 0
+  v1 block 11: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  v1 block 11 failures: 0
+  v2_seq block 11: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on the same th
+  v2_seq block 11 failures: 0
+block 11/20 done, temp 45.1 C
+  legacy block 12: PQ signature:     none
+  legacy block 12 failures: 0
+  v1 block 12: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  v1 block 12 failures: 0
+  v2_seq block 12: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on the same th
+  v2_seq block 12 failures: 0
+  v2_par block 12: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on a worker th
+  v2_par block 12 failures: 0
+block 12/20 done, temp 45.1 C
+  v1 block 13: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  v1 block 13 failures: 0
+  v2_seq block 13: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on the same th
+  v2_seq block 13 failures: 0
+  v2_par block 13: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on a worker th
+  v2_par block 13 failures: 0
+  legacy block 13: PQ signature:     none
+  legacy block 13 failures: 0
+block 13/20 done, temp 45.2 C
+  v2_seq block 14: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on the same th
+  v2_seq block 14 failures: 0
+  v2_par block 14: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on a worker th
+  v2_par block 14 failures: 0
+  legacy block 14: PQ signature:     none
+  legacy block 14 failures: 0
+  v1 block 14: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  v1 block 14 failures: 0
+block 14/20 done, temp 45.3 C
+  v2_par block 15: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on a worker th
+  v2_par block 15 failures: 0
+  legacy block 15: PQ signature:     none
+  legacy block 15 failures: 0
+  v1 block 15: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  v1 block 15 failures: 0
+  v2_seq block 15: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on the same th
+  v2_seq block 15 failures: 0
+block 15/20 done, temp 45.5 C
+  legacy block 16: PQ signature:     none
+  legacy block 16 failures: 0
+  v1 block 16: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  v1 block 16 failures: 0
+  v2_seq block 16: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on the same th
+  v2_seq block 16 failures: 0
+  v2_par block 16: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on a worker th
+  v2_par block 16 failures: 0
+block 16/20 done, temp 45.7 C
+  v1 block 17: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  v1 block 17 failures: 0
+  v2_seq block 17: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on the same th
+  v2_seq block 17 failures: 0
+  v2_par block 17: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on a worker th
+  v2_par block 17 failures: 0
+  legacy block 17: PQ signature:     none
+  legacy block 17 failures: 0
+block 17/20 done, temp 45.9 C
+  v2_seq block 18: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on the same th
+  v2_seq block 18 failures: 0
+  v2_par block 18: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on a worker th
+  v2_par block 18 failures: 0
+  legacy block 18: PQ signature:     none
+  legacy block 18 failures: 0
+  v1 block 18: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  v1 block 18 failures: 0
+block 18/20 done, temp 46.1 C
+  v2_par block 19: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on a worker th
+  v2_par block 19 failures: 0
+  legacy block 19: PQ signature:     none
+  legacy block 19 failures: 0
+  v1 block 19: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  v1 block 19 failures: 0
+  v2_seq block 19: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on the same th
+  v2_seq block 19 failures: 0
+block 19/20 done, temp 46.2 C
+  legacy block 20: PQ signature:     none
+  legacy block 20 failures: 0
+  v1 block 20: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  v1 block 20 failures: 0
+  v2_seq block 20: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on the same th
+  v2_seq block 20 failures: 0
+  v2_par block 20: PQ signature:     ML-DSA-44 in TLS Certificate extension over SHA-256(ClientHello||ServerHello), verified on a worker th
+  v2_par block 20 failures: 0
+block 20/20 done, temp 46.1 C
+end 2026-11-11T15:36:51Z governor=ondemand temp=46.1C
+   1000 legacy
+   1000 v1
+   1000 v2_par
+   1000 v2_seq

@@ -9,6 +9,10 @@
  *
  * Options (after key_dir):
  *   binary   ask for the ML-DSA signature as raw bytes instead of base64
+ *   certext  v2: ML-DSA-44 signature arrives in a TLS 1.3 Certificate extension, over
+ *            SHA-256(ClientHello || ServerHello), and is verified during the handshake
+ *   par      with certext: verify ML-DSA on a worker thread (second core) while OpenSSL
+ *            verifies the ECDSA CertificateVerify on this thread; join before accepting
  *   resume   reuse the session ticket of the previous, fully verified connection
  *            (TLS 1.3 PSK with fresh key exchange; no signatures on resumption)
  *
@@ -37,6 +41,7 @@
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <pthread.h>
 
 #include <openssl/ssl.h>
 #include <openssl/err.h>
@@ -49,20 +54,23 @@
 #define EKM_LEN 32
 #define MAX_RESPONSE 65536
 #define MAX_SIG 8192
+#define SIG_PREFIX_V2 "hybrid-auth-v2"
+#define PQ_AUTH_EXT 0xFE20      /* private-use extension number for the v2 signature */
+#define MAX_HELLO 8192
 
 struct byte_count {
     size_t rx, tx;
 };
 
 struct result {
-    double tcp_ms, handshake_ms, e2e_ms, verify_ms;
+    double tcp_ms, handshake_ms, e2e_ms, verify_ms, wait_ms;
     size_t hs_rx, hs_tx, rx, tx;
     int resumed;
 };
 
 static const char *host, *port, *pq_name;
 static EVP_PKEY *mldsa_pub;
-static int hybrid, binary, resume;
+static int hybrid, binary, resume, certext, parallel;
 static SSL_SESSION *last_session;
 static double trace_t0;
 
@@ -92,6 +100,140 @@ static long count_bytes(BIO *b, int oper, const char *argp, size_t len, int argi
             c->tx += *processed;
     }
     return ret;
+}
+
+/* ---- v2: ML-DSA signature in the Certificate message ---------------------- */
+
+static struct {
+    unsigned char ch[MAX_HELLO], sh[MAX_HELLO], sig[MAX_SIG];
+    unsigned char msg[sizeof(SIG_PREFIX_V2) - 1 + 32];
+    size_t ch_len, sh_len, sig_len;
+    int got_sig, verified, busy;
+    double verify_ms;           /* time the ML-DSA verification itself took */
+} v2;
+
+static pthread_mutex_t v2_mu = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t v2_start = PTHREAD_COND_INITIALIZER, v2_done = PTHREAD_COND_INITIALIZER;
+
+static int mldsa_verify(const unsigned char *msg, size_t msg_len,
+                        const unsigned char *sig, size_t sig_len)
+{
+    EVP_MD_CTX *mctx = EVP_MD_CTX_new();
+    int ok = mctx != NULL &&
+             EVP_DigestVerifyInit_ex(mctx, NULL, NULL, NULL, NULL, mldsa_pub, NULL) == 1 &&
+             EVP_DigestVerify(mctx, sig, sig_len, msg, msg_len) == 1;
+
+    EVP_MD_CTX_free(mctx);
+    return ok;
+}
+
+static double now_ms(void);
+
+static void v2_verify_now(void)
+{
+    double t = now_ms();
+
+    v2.verified = mldsa_verify(v2.msg, sizeof(v2.msg), v2.sig, v2.sig_len);
+    v2.verify_ms = now_ms() - t;
+}
+
+/* Persistent worker thread: verifies the ML-DSA signature when woken. */
+static void *v2_worker(void *arg)
+{
+    (void)arg;
+    pthread_mutex_lock(&v2_mu);
+    for (;;) {
+        while (!v2.busy)
+            pthread_cond_wait(&v2_start, &v2_mu);
+        pthread_mutex_unlock(&v2_mu);
+        v2_verify_now();
+        pthread_mutex_lock(&v2_mu);
+        v2.busy = 0;
+        pthread_cond_signal(&v2_done);
+    }
+    return NULL;
+}
+
+/* ClientHello: send the (empty) extension to ask the server for the v2 signature. */
+static int v2_add(SSL *s, unsigned int ext_type, unsigned int context, const unsigned char **out,
+                  size_t *outlen, X509 *x, size_t chainidx, int *al, void *arg)
+{
+    (void)s; (void)ext_type; (void)x; (void)chainidx; (void)al; (void)arg;
+    if (context != SSL_EXT_CLIENT_HELLO)
+        return 0;
+    *out = NULL;
+    *outlen = 0;
+    return 1;
+}
+
+/* Certificate: take the signature and start verifying it (here or on the worker). */
+static int v2_parse(SSL *s, unsigned int ext_type, unsigned int context, const unsigned char *in,
+                    size_t inlen, X509 *x, size_t chainidx, int *al, void *arg)
+{
+    unsigned char hello[2 * MAX_HELLO];
+    unsigned int hlen = 0;
+
+    (void)s; (void)ext_type; (void)x; (void)arg;
+    if (context != SSL_EXT_TLS1_3_CERTIFICATE || chainidx != 0)
+        return 1;
+    if (inlen == 0 || inlen > MAX_SIG || v2.ch_len == 0 || v2.sh_len == 0 || v2.got_sig) {
+        *al = SSL_AD_DECODE_ERROR;
+        return 0;
+    }
+    memcpy(v2.sig, in, inlen);
+    v2.sig_len = inlen;
+    memcpy(hello, v2.ch, v2.ch_len);
+    memcpy(hello + v2.ch_len, v2.sh, v2.sh_len);
+    memcpy(v2.msg, SIG_PREFIX_V2, sizeof(SIG_PREFIX_V2) - 1);
+    if (EVP_Digest(hello, v2.ch_len + v2.sh_len, v2.msg + sizeof(SIG_PREFIX_V2) - 1, &hlen,
+                   EVP_sha256(), NULL) != 1) {
+        *al = SSL_AD_INTERNAL_ERROR;
+        return 0;
+    }
+    v2.got_sig = 1;
+    if (parallel) {
+        pthread_mutex_lock(&v2_mu);
+        v2.busy = 1;
+        pthread_cond_signal(&v2_start);
+        pthread_mutex_unlock(&v2_mu);
+        return 1;               /* OpenSSL goes on to verify ECDSA meanwhile */
+    }
+    v2_verify_now();
+    if (!v2.verified)
+        *al = SSL_AD_DECRYPT_ERROR;
+    return v2.verified;
+}
+
+/* Wait for the worker (parallel mode); returns the verification result. */
+static int v2_join(void)
+{
+    pthread_mutex_lock(&v2_mu);
+    while (v2.busy)
+        pthread_cond_wait(&v2_done, &v2_mu);
+    pthread_mutex_unlock(&v2_mu);
+    return v2.verified;
+}
+
+static void trace_msg(int write_p, int version, int content_type, const void *buf,
+                      size_t len, SSL *ssl, void *arg);
+
+/* Message callback: record the hellos for v2 and/or print the TRACE timeline. */
+static void msg_cb(int write_p, int version, int content_type, const void *buf,
+                   size_t len, SSL *ssl, void *arg)
+{
+    const unsigned char *m = buf;
+
+    if (certext && content_type == SSL3_RT_HANDSHAKE && len > 0 && len <= MAX_HELLO) {
+        if (write_p && m[0] == SSL3_MT_CLIENT_HELLO && v2.ch_len == 0) {
+            memcpy(v2.ch, m, len);
+            v2.ch_len = len;
+        } else if (!write_p && m[0] == SSL3_MT_SERVER_HELLO && v2.sh_len == 0) {
+            memcpy(v2.sh, m, len);
+            v2.sh_len = len;
+        }
+    }
+    if (getenv("TRACE") != NULL)
+        trace_msg(write_p, version, content_type, buf, len, ssl, arg);
 }
 
 /* TRACE=1: print when each TLS handshake message is sent/received. */
@@ -242,17 +384,32 @@ static int run_once(SSL_CTX *ctx, int verbose, struct result *r)
     BIO_set_callback_arg(SSL_get_rbio(ssl), (char *)&bytes);
     if (resume && last_session != NULL)
         SSL_set_session(ssl, last_session);
+    memset(&v2, 0, sizeof(v2));
+    if (certext || getenv("TRACE") != NULL)
+        SSL_set_msg_callback(ssl, msg_cb);
     if (getenv("TRACE") != NULL) {
-        SSL_set_msg_callback(ssl, trace_msg);
         trace_t0 = now_ms();
         printf("Handshake trace (time since SSL_connect start):\n");
     }
 
     if (SSL_connect(ssl) != 1) {
+        if (parallel)
+            v2_join();
         fprintf(stderr, "TLS handshake failed (verify result: %s)\n",
                 X509_verify_cert_error_string(SSL_get_verify_result(ssl)));
         ERR_print_errors_fp(stderr);
         goto end;
+    }
+    /* v2: the handshake is accepted only if the ML-DSA signature was received and verified;
+     * in parallel mode wait for the worker here, before any application data is sent. */
+    if (certext && !SSL_session_reused(ssl)) {
+        tv = now_ms();
+        if (!v2.got_sig || !(parallel ? v2_join() : v2.verified)) {
+            fprintf(stderr, "v2 ML-DSA-44 signature %s\n", v2.got_sig ? "verification FAILED" : "missing");
+            goto end;
+        }
+        r->wait_ms = now_ms() - tv;
+        r->verify_ms = v2.verify_ms;
     }
     t2 = now_ms();
     if (getenv("TRACE") != NULL)
@@ -264,9 +421,9 @@ static int run_once(SSL_CTX *ctx, int verbose, struct result *r)
     n = snprintf(req, sizeof(req),
                  "GET / HTTP/1.1\r\nHost: test\r\n%s%s%s%s"
                  "Connection: close\r\n\r\n",
-                 hybrid ? "PQ-Auth: " : "", hybrid ? pq_name : "",
-                 hybrid ? "\r\n" : "",
-                 hybrid && binary ? "PQ-Auth-Encoding: binary\r\n" : "");
+                 hybrid && !certext ? "PQ-Auth: " : "", hybrid && !certext ? pq_name : "",
+                 hybrid && !certext ? "\r\n" : "",
+                 hybrid && !certext && binary ? "PQ-Auth-Encoding: binary\r\n" : "");
     SSL_write(ssl, req, n);
     while (total < MAX_RESPONSE &&
            (n = SSL_read(ssl, buf + total, (int)(MAX_RESPONSE - total))) > 0)
@@ -275,10 +432,12 @@ static int run_once(SSL_CTX *ctx, int verbose, struct result *r)
 
     /* A resumed session inherits the authentication of the full handshake
      * that created its ticket, and only verified sessions are kept. */
-    tv = now_ms();
-    if (hybrid && !r->resumed && !verify_pq_signature(ssl, buf, total))
-        goto end;
-    r->verify_ms = now_ms() - tv;
+    if (!certext) {
+        tv = now_ms();
+        if (hybrid && !r->resumed && !verify_pq_signature(ssl, buf, total))
+            goto end;
+        r->verify_ms = now_ms() - tv;
+    }
     r->e2e_ms = now_ms() - t0;
     r->tcp_ms = t1 - t0;
     r->handshake_ms = t2 - t1;
@@ -311,7 +470,11 @@ static int run_once(SSL_CTX *ctx, int verbose, struct result *r)
         printf("Server signature: %s (certificate verified: %s)\n", signame,
                r->resumed ? "in original session"
                           : SSL_get_verify_result(ssl) == X509_V_OK ? "yes" : "NO");
-        if (hybrid)
+        if (certext)
+            printf("PQ signature:     %s in TLS Certificate extension over SHA-256(ClientHello||ServerHello),"
+                   " verified %s (verified: yes)\n", pq_name,
+                   parallel ? "on a worker thread in parallel with ECDSA" : "on the same thread");
+        else if (hybrid)
             printf("PQ signature:     %s over TLS exporter, %s (verified: yes)\n",
                    pq_name, binary ? "binary" : "base64");
         else
@@ -354,7 +517,7 @@ int main(int argc, char **argv)
     const char *group, *auth, *dir;
     char path[512];
     struct result *res;
-    double *v, e2e, tcp, hs, ver, rx, tx;
+    double *v, e2e, tcp, hs, ver, wait, rx, tx;
     struct rusage ru;
     SSL_CTX *ctx;
     int runs, i, ok = 0, first = 0, n;
@@ -374,6 +537,8 @@ int main(int argc, char **argv)
     for (i = 7; i < argc; i++) {
         binary |= strcmp(argv[i], "binary") == 0;
         resume |= strcmp(argv[i], "resume") == 0;
+        certext |= strcmp(argv[i], "certext") == 0;
+        parallel |= strcmp(argv[i], "par") == 0;
     }
     if (strcmp(auth, "hybrid44") == 0)
         pq_name = "ML-DSA-44";
@@ -384,18 +549,28 @@ int main(int argc, char **argv)
         return 1;
     }
     hybrid = pq_name != NULL;
+    if (certext && (pq_name == NULL || strcmp(pq_name, "ML-DSA-44") != 0)) {
+        fprintf(stderr, "certext needs auth mode hybrid44\n");
+        return 1;
+    }
+    if (parallel && !certext) {
+        fprintf(stderr, "par needs certext\n");
+        return 1;
+    }
     if (runs < 1)
         runs = 1;
     if (resume && runs < 2)
         runs = 2;
 
     printf("OpenSSL library:  %s\n", OpenSSL_version(OPENSSL_VERSION));
-    printf("Mode:             %s + %s%s%s, %d runs\n", group,
+    printf("Mode:             %s + %s%s%s%s, %d runs\n", group,
            !hybrid ? "legacy auth (RSA-3072)"
            : strcmp(pq_name, "ML-DSA-44") == 0 ? "hybrid auth (ECDSA P-256 + ML-DSA-44)"
                                                : "hybrid auth (ECDSA P-256 + ML-DSA-65)",
-           binary ? ", binary signature" : "", resume ? ", session resumption" : "",
-           runs);
+           certext ? (parallel ? ", v2: signature in Certificate, ML-DSA verified on a 2nd core in parallel"
+                               : ", v2: signature in Certificate, verified on the same core")
+                   : binary ? ", binary signature" : "",
+           "", resume ? ", session resumption" : "", runs);
 
     ctx = SSL_CTX_new(TLS_client_method());
     SSL_CTX_set_min_proto_version(ctx, TLS1_3_VERSION);
@@ -407,6 +582,22 @@ int main(int argc, char **argv)
     }
     if (resume)
         SSL_CTX_set_session_cache_mode(ctx, SSL_SESS_CACHE_CLIENT);
+    if (certext && SSL_CTX_add_custom_ext(ctx, PQ_AUTH_EXT,
+                                          SSL_EXT_TLS1_3_ONLY | SSL_EXT_CLIENT_HELLO |
+                                          SSL_EXT_TLS1_3_CERTIFICATE,
+                                          v2_add, NULL, NULL, v2_parse, NULL) != 1) {
+        ERR_print_errors_fp(stderr);
+        return 1;
+    }
+    if (parallel) {
+        pthread_t worker;
+
+        if (pthread_create(&worker, NULL, v2_worker, NULL) != 0) {
+            perror("pthread_create");
+            return 1;
+        }
+        pthread_detach(worker);
+    }
     /* Pin the server certificate as the only trust anchor. */
     snprintf(path, sizeof(path), "%s/%s_cert.pem", dir, hybrid ? "ecdsa" : "rsa");
     if (SSL_CTX_load_verify_locations(ctx, path, NULL) != 1) {
@@ -433,8 +624,9 @@ int main(int argc, char **argv)
         if (run_once(ctx, i == 0, &res[ok])) {
             /* RAW=1: one line per connection, for external statistics. */
             if (getenv("RAW") != NULL)
-                printf("RAW,%d,%.3f,%.3f,%.3f,%d\n", i + 1, res[ok].tcp_ms,
-                       res[ok].handshake_ms, res[ok].e2e_ms, res[ok].resumed);
+                printf("RAW,%d,%.3f,%.3f,%.3f,%d,%.3f,%.3f\n", i + 1, res[ok].tcp_ms,
+                       res[ok].handshake_ms, res[ok].e2e_ms, res[ok].resumed,
+                       res[ok].verify_ms, res[ok].wait_ms);
             ok++;
         } else if (getenv("RAW") != NULL) {
             printf("RAW,%d,FAILED\n", i + 1);
@@ -463,18 +655,22 @@ int main(int argc, char **argv)
     tcp = MEDIAN_D(tcp_ms);
     hs = MEDIAN_D(handshake_ms);
     ver = MEDIAN_D(verify_ms);
+    wait = MEDIAN_D(wait_ms);
     rx = MEDIAN_Z(rx);
     tx = MEDIAN_Z(tx);
     e2e = MEDIAN_D(e2e_ms);     /* last, so v holds the sorted e2e for min/max */
     printf("TCP connect:      %8.3f ms\n", tcp);
     printf("TLS handshake:    %8.3f ms\n", hs);
     printf("PQ verify:        %8.3f ms\n", ver);
+    if (certext)
+        printf("Wait after TLS:   %8.3f ms   (time spent waiting for the ML-DSA result after OpenSSL finished)\n", wait);
     printf("End-to-end:       %8.3f ms   (min %.3f / max %.3f)\n", e2e, v[0], v[n - 1]);
     printf("Total bytes:      %8.0f rx / %.0f tx\n", rx, tx);
     getrusage(RUSAGE_SELF, &ru);
     printf("Peak memory:      %8ld KB (max RSS)\n", ru.ru_maxrss);
     printf("CSV,%s,%s,%s%s,%d,%.3f,%.3f,%.3f,%.3f,%.0f,%.0f,%ld\n", group, auth,
-           binary ? "binary" : "base64", resume ? "+resume" : "", n,
+           certext ? (parallel ? "certext+par" : "certext") : binary ? "binary" : "base64",
+           resume ? "+resume" : "", n,
            tcp, hs, ver, e2e, rx, tx, ru.ru_maxrss);
 
     free(res);

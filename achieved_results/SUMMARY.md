@@ -237,3 +237,22 @@ largest at the default low-power clock. It stacks with the other approaches: bit
 brings client crypto from 16.0 ms (baseline) to 4.7 ms. This is a crypto-level feasibility result; using it in
 the real TLS handshake requires sending the ML-DSA signature with the certificate (authentication) and patching
 OpenSSL's hybrid KEM (key exchange). End-to-end not measured yet.
+
+### 13b. MULTICORE part 2 (2026-11-11): parallel hybrid authentication in the real TLS handshake
+
+The ML-DSA-44 signature now travels inside the TLS 1.3 Certificate message (extension `0xFE20`, signing
+SHA-256(ClientHello ‖ ServerHello)), so the board verifies it on a second core while OpenSSL verifies ECDSA.
+1000 connections per mode, own server, default clock, blocks alternating; 0 failures.
+Full report: `multicore/multicore_e2e_REPORT.md`.
+
+| Mode (own server, LAN, default clock) | Median end-to-end | vs legacy |
+|---|---|---|
+| Legacy (X25519 + RSA-3072) | 21.68 ms | |
+| Hybrid v1 (ML-DSA after the handshake, one core) | 28.19 ms | +6.51 ms |
+| Hybrid v2, ML-DSA in Certificate, one core | 28.68 ms | +7.00 ms |
+| **Hybrid v2, ML-DSA in Certificate, second core** | **24.57 ms** | **+2.89 ms** |
+
+**Conclusion:** the second core makes the full hybrid connection 3.6 ms faster than v1 (−12.8 %, 20/20 blocks) and
+more than halves the hybrid penalty at the default clock with no extra heat; this matches the feasibility prediction.
+On its own it doesn't fully reach the legacy baseline (+2.9 ms); the key exchange halves are still sequential inside
+OpenSSL. Security tests passed (wrong ML-DSA key and missing signature are rejected).
