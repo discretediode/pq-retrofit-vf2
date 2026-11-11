@@ -1,0 +1,105 @@
+diff --git a/ref/sign.c b/ref/sign.c
+index 7d3f882..3033926 100644
+--- a/ref/sign.c
++++ b/ref/sign.c
+@@ -7,6 +7,9 @@
+ #include "randombytes.h"
+ #include "symmetric.h"
+ #include "fips202.h"
++#ifdef ACCEL
++#include "accel.h"
++#endif
+ 
+ /*************************************************
+ * Name:        crypto_sign_keypair
+@@ -99,6 +102,10 @@ int crypto_sign_signature_internal(uint8_t *sig,
+   polyveck t0, s2, w1, w0, h;
+   poly cp;
+   keccak_state state;
++#ifdef ACCEL
++  polyvecl cs1;
++  polyveck cs2;
++#endif
+ 
+   rho = seedbuf;
+   tr = rho + SEEDBYTES;
+@@ -125,8 +132,10 @@ int crypto_sign_signature_internal(uint8_t *sig,
+ 
+   /* Expand matrix and transform vectors */
+   polyvec_matrix_expand(mat, rho);
++#ifndef ACCEL
+   polyvecl_ntt(&s1);
+   polyveck_ntt(&s2);
++#endif
+   polyveck_ntt(&t0);
+ 
+ rej:
+@@ -151,11 +160,19 @@ rej:
+   shake256_finalize(&state);
+   shake256_squeeze(sig, CTILDEBYTES, &state);
+   poly_challenge(&cp, sig);
++#ifdef ACCEL
++  /* c*s1 and c*s2 as exact small integers, computed by the accelerator */
++  accel_cs(&cs1, &cs2, &cp, &s1, &s2);
++#endif
+   poly_ntt(&cp);
+ 
+   /* Compute z, reject if it reveals secret */
++#ifdef ACCEL
++  z = cs1;
++#else
+   polyvecl_pointwise_poly_montgomery(&z, &cp, &s1);
+   polyvecl_invntt_tomont(&z);
++#endif
+   polyvecl_add(&z, &z, &y);
+   polyvecl_reduce(&z);
+   if(polyvecl_chknorm(&z, GAMMA1 - BETA))
+@@ -163,8 +180,12 @@ rej:
+ 
+   /* Check that subtracting cs2 does not change high bits of w and low bits
+    * do not reveal secret information */
++#ifdef ACCEL
++  h = cs2;
++#else
+   polyveck_pointwise_poly_montgomery(&h, &cp, &s2);
+   polyveck_invntt_tomont(&h);
++#endif
+   polyveck_sub(&w0, &w0, &h);
+   polyveck_reduce(&w0);
+   if(polyveck_chknorm(&w0, GAMMA2 - BETA))
+@@ -304,6 +325,10 @@ int crypto_sign_verify_internal(const uint8_t *sig,
+   polyvecl mat[K], z;
+   polyveck t1, w1, h;
+   keccak_state state;
++#ifdef ACCEL
++  unsigned int j;
++  polyveck ct1;
++#endif
+ 
+   if(siglen != CRYPTO_BYTES)
+     return -1;
+@@ -330,6 +355,16 @@ int crypto_sign_verify_internal(const uint8_t *sig,
+   polyvecl_ntt(&z);
+   polyvec_matrix_pointwise_montgomery(&w1, mat, &z);
+ 
++#ifdef ACCEL
++  /* c*t1 as exact integers from the accelerator, subtracted after the inverse NTT */
++  accel_ct1(&ct1, &cp, &t1);
++  polyveck_reduce(&w1);
++  polyveck_invntt_tomont(&w1);
++  for(i = 0; i < K; ++i)
++    for(j = 0; j < N; ++j)
++      w1.vec[i].coeffs[j] -= ct1.vec[i].coeffs[j] * (1 << D);
++  polyveck_reduce(&w1);
++#else
+   poly_ntt(&cp);
+   polyveck_shiftl(&t1);
+   polyveck_ntt(&t1);
+@@ -338,6 +373,7 @@ int crypto_sign_verify_internal(const uint8_t *sig,
+   polyveck_sub(&w1, &w1, &t1);
+   polyveck_reduce(&w1);
+   polyveck_invntt_tomont(&w1);
++#endif
+ 
+   /* Reconstruct w1 */
+   polyveck_caddq(&w1);

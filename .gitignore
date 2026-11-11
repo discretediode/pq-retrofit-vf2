@@ -1,0 +1,10 @@
+bin/
+keys/
+*.hef
+*.har
+*.onnx
+*.npy
+hailo/*_weights.bin
+.venv/
+.DS_Store
+results/perf_*.data
