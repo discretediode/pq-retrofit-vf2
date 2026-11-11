@@ -256,3 +256,20 @@ Full report: `multicore/multicore_e2e_REPORT.md`.
 more than halves the hybrid penalty at the default clock with no extra heat; this matches the feasibility prediction.
 On its own it doesn't fully reach the legacy baseline (+2.9 ms); the key exchange halves are still sequential inside
 OpenSSL. Security tests passed (wrong ML-DSA key and missing signature are rejected).
+
+## 14. ALL APPROACHES COMBINED (2026-11-11)
+
+COMBINED = min 750 MHz (approach 1) + Zba/Zbb build (approach 2) + ML-DSA on a second core in the handshake
+(approach 3), alternated block by block with BASE (= baseline setup), 1000 runs per configuration, mode and
+scenario; 8000 connections, 0 failures. Full report: `combined_all_approaches/combined_REPORT.md`.
+
+| Scenario | Baseline: legacy (BASE) | Hybrid, BASE | **Hybrid, COMBINED** | Hybrid COMBINED vs legacy baseline |
+|---|---|---|---|---|
+| Own server, full hybrid auth, end-to-end | 21.04 ms | 28.06 ms | **14.47 ms** | **−6.57 ms (−31 %), 20/20 blocks** |
+| Hackathon server, handshake | 38.36 ms | 43.76 ms | **35.62 ms** | **−2.73 ms (−7 %), 17/20 blocks** |
+| Idle temperature | 45.9 °C | 45.9 °C | 47.2 °C | +1.3 °C |
+
+**Conclusion:** with all three approaches combined, full hybrid post-quantum TLS on the VisionFive 2 is faster than
+the legacy baseline: −31 % with hybrid authentication on the own server and −7 % for the hybrid key exchange against
+the hackathon server, for +1.3 °C idle temperature and no hardware changes. The "no increase in end-to-end
+latency" target is met with margin.

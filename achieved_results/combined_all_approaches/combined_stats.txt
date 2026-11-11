@@ -1,0 +1,34 @@
+
+## Hackathon server (IPv4), TLS handshake
+config     mode        n     best   median     mean      p95    worst
+BASELINE   legacy   1000    31.61    39.92    45.07    70.84   524.45
+BASELINE   hybrid   1000    36.33    45.08    50.09    76.03   359.32
+BASE       legacy   1000    28.19    38.36    42.59    60.48   354.25
+BASE       hybrid   1000    31.40    43.76    48.15    71.96   356.88
+COMBINED   legacy   1000    25.90    32.99    36.76    55.41   355.01
+COMBINED   hybrid   1000    27.73    35.62    39.33    58.86   140.84
+legacy  COMBINED vs BASE: overall median -5.36 ms (-14.0%); per block median -5.16 ms, range -10.04..+0.62, COMBINED faster in 18/20 blocks
+hybrid  COMBINED vs BASE: overall median -8.14 ms (-18.6%); per block median -8.16 ms, range -38.73..-0.66, COMBINED faster in 20/20 blocks
+BASE       hybrid - legacy: per block median +5.58 ms, hybrid faster in 0/20 blocks
+COMBINED   hybrid - legacy: per block median +2.84 ms, hybrid faster in 2/20 blocks
+
+## Own server (LAN), end-to-end
+config     mode        n     best   median     mean      p95    worst
+BASELINE   legacy   1000    14.77    21.61    21.53    24.35    31.30
+BASELINE   hybrid   1000    20.51    27.95    27.99    31.58    40.05
+BASE       legacy   1000    12.64    21.04    21.17    24.19    35.08
+BASE       hybrid   1000    20.40    28.06    28.25    31.80   107.13
+COMBINED   legacy   1000     8.96    15.35    15.39    17.79    21.39
+COMBINED   hybrid   1000    12.21    14.47    14.74    17.41    26.57
+legacy  COMBINED vs BASE: overall median -5.70 ms (-27.1%); per block median -5.48 ms, range -7.63..-3.30, COMBINED faster in 20/20 blocks
+hybrid  COMBINED vs BASE: overall median -13.59 ms (-48.4%); per block median -13.62 ms, range -14.67..-11.03, COMBINED faster in 20/20 blocks
+BASE       hybrid - legacy: per block median +7.15 ms, hybrid faster in 0/20 blocks
+COMBINED   hybrid - legacy: per block median -0.99 ms, hybrid faster in 20/20 blocks
+
+## Target check: COMBINED hybrid vs BASE legacy (the agreed baseline), paired per block
+hackathon: BASE legacy 38.36 ms -> COMBINED hybrid 35.62 ms = -2.73 ms (-7.1%); per block median -2.33, range -25.42..+4.30; COMBINED hybrid faster in 17/20 blocks
+own      : BASE legacy 21.04 ms -> COMBINED hybrid 14.47 ms = -6.57 ms (-31.2%); per block median -6.46, range -8.81..-4.07; COMBINED hybrid faster in 20/20 blocks
+
+## Temperatures (deg C)
+BASE     : idle after 120 s 45.9; during run (start of each block) mean 47.8, max 48.9
+COMBINED : idle after 120 s 47.2; during run (start of each block) mean 47.8, max 48.5

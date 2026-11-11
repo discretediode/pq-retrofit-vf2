@@ -10,7 +10,7 @@ Two scenarios are measured throughout:
 1. **Hackathon server** (IPv4), TLS handshake time, with server authentication RSA-3072 in both modes
 2. **Own server** on the local network, end-to-end time including full hybrid authentication
 
-Start with **[SUMMARY.md](SUMMARY.md)** ([PDF](SUMMARY.pdf)); sections 10–13b cover the results in this folder.
+Start with **[SUMMARY.md](SUMMARY.md)** ([PDF](SUMMARY.pdf)); sections 10–14 cover the results in this folder.
 
 ## Folder layout: one folder per approach
 Each approach is self-contained: a detailed report (`.md` + `.pdf`), all raw measurements, statistics, logs and the
@@ -19,15 +19,29 @@ scripts used, so each can be written up on its own.
 ```
 achieved_results/
 ├── README.md / README.pdf          this index
-├── SUMMARY.md / SUMMARY.pdf        overall summary (sections 10-12 = these approaches)
+├── SUMMARY.md / SUMMARY.pdf        overall summary (sections 10-14 = these approaches)
 ├── baseline_default_clock/         BASELINE: default CPU setting, legacy vs hybrid
 ├── dynamic_cpu_freq/               APPROACH 1: raise the minimum CPU clock
 ├── bitmanip_zba_zbb/               APPROACH 2: RISC-V Zba/Zbb bit-manipulation extensions
 ├── multicore/                      APPROACH 3: classical and PQ halves on separate CPU cores
+├── combined_all_approaches/        ALL THREE APPROACHES COMBINED vs the baseline (final result)
 └── tools/                          source code of clients, server, benchmarks and analysis scripts
 ```
 
-## Headline result
+## Final result: all three approaches combined
+
+| Scenario | Baseline: legacy | Hybrid, baseline setup | **Hybrid, all approaches combined** | vs legacy baseline |
+|---|---|---|---|---|
+| Own server, full hybrid auth (ML-KEM + ECDSA + ML-DSA-44), end-to-end median | 21.04 ms | 28.06 ms | **14.47 ms** | **−31 % (20/20 blocks)** |
+| Hackathon server, hybrid key exchange (X25519MLKEM768), handshake median | 38.36 ms | 43.76 ms | **35.62 ms** | **−7 % (17/20 blocks)** |
+| Idle temperature | 45.9 °C | 45.9 °C | 47.2 °C | +1.3 °C |
+
+COMBINED = minimum CPU clock 750 MHz + Zba/Zbb OpenSSL build + ML-DSA verified on a second core inside the TLS
+handshake; alternated block by block with the baseline setup, 1000 runs each, 0 failures. **The "no increase in
+end-to-end latency" target is met with margin, with software and settings only.**
+See [`combined_all_approaches/combined_REPORT.md`](combined_all_approaches/combined_REPORT.md).
+
+## Results per approach
 
 | Scenario | Baseline: legacy, default CPU | Hybrid, default CPU | **Hybrid, min clock 750 MHz** |
 |---|---|---|---|
@@ -109,6 +123,16 @@ Sections 1–9 refer to earlier raw data that isn't included in this folder.
 | `multicore_e2e_stats.txt` | Statistics: best / percentiles / median / worst, time breakdown, paired per-block comparison, vs baseline |
 | `multicore_e2e.log` | Run log: per-block verification checks, failures (0), temperature |
 | `scripts/bench_multicore_e2e.sh` | End-to-end benchmark script (no sudo needed) |
+
+### `combined_all_approaches/`: ALL THREE APPROACHES COMBINED (final result)
+| File | Contents |
+|---|---|
+| `combined_REPORT.md` / `.pdf` | **Report**: BASE (baseline setup) vs COMBINED (min 750 MHz + bitmanip + ML-DSA on a 2nd core), alternated block by block, 1000 runs per mode, both scenarios; target check, temperatures, how the approaches add up |
+| `combined_raw.csv` | All 8000 measurements: `config,scenario,mode,block,run,ms` |
+| `combined_temps.csv` | Idle and per-block temperatures: `config,phase,block,temp_c` |
+| `combined_stats.txt` | Statistics: best / median / mean / p95 / worst, paired per-block comparisons, target check |
+| `combined.log` | Run log: per-block verification checks, failures (0), temperatures |
+| `scripts/bench_combined.sh` | Benchmark script (needs sudo; restores the default CPU setting) |
 
 ### `tools/`: source code
 | File | What |
