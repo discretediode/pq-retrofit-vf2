@@ -1,0 +1,20 @@
+== clock=default (ondemand, min 312500) lib=opt start 14:43:20 temp=44.8C
+# parverify: OpenSSL 3.5.9, 4 online CPUs, 200 iterations, pause 100 ms, label opt_default
+# failures: 0
+== clock=default (ondemand, min 312500) lib=bitmanip start 14:46:28 temp=44.6C
+# parverify: OpenSSL 3.5.9, 4 online CPUs, 200 iterations, pause 100 ms, label bitmanip_default
+# failures: 0
+== clock=min750 (ondemand, min 750000) lib=opt start 14:49:41 temp=44.7C
+# parverify: OpenSSL 3.5.9, 4 online CPUs, 200 iterations, pause 100 ms, label opt_min750
+# failures: 0
+== clock=min750 (ondemand, min 750000) lib=bitmanip start 14:52:45 temp=45.4C
+# parverify: OpenSSL 3.5.9, 4 online CPUs, 200 iterations, pause 100 ms, label bitmanip_min750
+# failures: 0
+== clock=fixed1500 (performance, min 312500) lib=opt start 14:55:55 temp=46.6C
+# parverify: OpenSSL 3.5.9, 4 online CPUs, 200 iterations, pause 100 ms, label opt_fixed1500
+# failures: 0
+== clock=fixed1500 (performance, min 312500) lib=bitmanip start 14:58:57 temp=49.8C
+# parverify: OpenSSL 3.5.9, 4 online CPUs, 200 iterations, pause 100 ms, label bitmanip_fixed1500
+# failures: 0
+rows: 10800
+restored: ondemand min=312500 temp=50.2C

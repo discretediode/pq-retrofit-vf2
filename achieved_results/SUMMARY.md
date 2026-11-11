@@ -217,3 +217,23 @@ End-to-end, 1000 runs per mode, default CPU clock, builds alternated block by bl
 end-to-end it's −1.6 ms, about 7x less than raising the minimum CPU clock (−11.6 ms). On its own it doesn't meet
 the latency target at the default clock. The combination (bitmanip + min 750 MHz) is the logical next step.
 Caveat: the library then requires a CPU with Zba/Zbb.
+
+## 13. MULTICORE (2026-11-11): classical and PQ halves on separate cores (feasibility)
+
+The classical and post-quantum halves of each hybrid step (ECDSA ‖ ML-DSA verify, X25519 ‖ ML-KEM keygen,
+X25519 ‖ ML-KEM decaps) were run one after another vs on two cores at once (persistent worker thread), 200
+iterations per case, at three clock settings and with both builds; 10,800 measurements, 0 failures.
+Full report: `multicore/multicore_REPORT.md`.
+
+| Client-side crypto of one hybrid handshake | One core | Two cores | Saved |
+|---|---|---|---|
+| plain build, default clock (baseline setting) | 16.01 ms | **10.09 ms** | **−5.92 ms (1.59x)** |
+| plain build, min 750 MHz | 7.99 ms | 5.01 ms | −2.98 ms |
+| bitmanip build, min 750 MHz | 7.39 ms | **4.71 ms** | −2.68 ms |
+| plain build, fixed 1.5 GHz | 3.99 ms | 2.51 ms | −1.48 ms |
+
+**Conclusion:** parallel halves give a consistent 1.5–1.65x speed-up (parallel faster in 90–100 % of iterations),
+largest at the default low-power clock. It stacks with the other approaches: bitmanip + min 750 MHz + two cores
+brings client crypto from 16.0 ms (baseline) to 4.7 ms. This is a crypto-level feasibility result; using it in
+the real TLS handshake requires sending the ML-DSA signature with the certificate (authentication) and patching
+OpenSSL's hybrid KEM (key exchange). End-to-end not measured yet.

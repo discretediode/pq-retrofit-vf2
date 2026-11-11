@@ -10,7 +10,7 @@ Two scenarios are measured throughout:
 1. **Hackathon server** (IPv4), TLS handshake time, with server authentication RSA-3072 in both modes
 2. **Own server** on the local network, end-to-end time including full hybrid authentication
 
-Start with **[SUMMARY.md](SUMMARY.md)** ([PDF](SUMMARY.pdf)); sections 10, 11 and 12 cover the results in this folder.
+Start with **[SUMMARY.md](SUMMARY.md)** ([PDF](SUMMARY.pdf)); sections 10–13 cover the results in this folder.
 
 ## Folder layout: one folder per approach
 Each approach is self-contained: a detailed report (`.md` + `.pdf`), all raw measurements, statistics, logs and the
@@ -23,7 +23,7 @@ achieved_results/
 ├── baseline_default_clock/         BASELINE: default CPU setting, legacy vs hybrid
 ├── dynamic_cpu_freq/               APPROACH 1: raise the minimum CPU clock
 ├── bitmanip_zba_zbb/               APPROACH 2: RISC-V Zba/Zbb bit-manipulation extensions
-├── multicore/                      APPROACH 3: classical and PQ halves on separate cores (in progress)
+├── multicore/                      APPROACH 3: classical and PQ halves on separate CPU cores
 └── tools/                          source code of clients, server, benchmarks and analysis scripts
 ```
 
@@ -44,6 +44,13 @@ Rebuilding OpenSSL with `-march=rv64gc_zba_zbb` (no code changes) speeds up SHA-
 and ML-DSA verification by 15 %, while classical algorithms are unchanged. End-to-end, full hybrid on the LAN drops
 from 28.15 to 26.57 ms (−5.6 %, faster in 20/20 blocks) at the default clock: a real gain, but about 7x smaller than
 the clock-policy change.
+
+### Multicore: classical and PQ halves on separate cores (feasibility)
+Running the classical and post-quantum halves of each hybrid step on two cores at once speeds up the client-side
+crypto 1.5–1.65x at every clock setting (parallel faster in 90–100 % of iterations). At the default clock, the
+crypto of one hybrid handshake drops from 16.0 to 10.1 ms; combined with bitmanip and min 750 MHz it's 4.7 ms.
+This is a crypto-level feasibility result; the TLS integration (sending the ML-DSA signature with the certificate,
+parallel hybrid KEM inside OpenSSL) is the next step, and end-to-end hasn't been measured yet.
 
 ## Files
 
@@ -87,6 +94,15 @@ Sections 1–9 refer to earlier raw data that isn't included in this folder.
 | `bitmanip_e2e.log` | Per-block log, library linkage of each binary, negotiated group / ML-DSA verification checks |
 | `scripts/bench_bitmanip.sh`, `scripts/micro_bitmanip.sh`, `scripts/micro_fixed.sh` | End-to-end and micro-benchmark scripts |
 
+### `multicore/`: MULTICORE (classical and PQ halves on separate CPU cores)
+| File | Contents |
+|---|---|
+| `multicore_REPORT.md` / `.pdf` | **Report**: one core vs two cores (new thread / persistent worker), 3 pairs, 3 clock settings x 2 builds, findings and limits |
+| `multicore_feasibility_raw.csv` | All 10,800 measurements: `label,pair,mode,iter,us,cpu_classical,cpu_pq` (label = build_clock) |
+| `multicore_feasibility_stats.txt` | Statistics: best / median / p95 / worst, time saved, speed-up, share of iterations where parallel won, core usage |
+| `multicore_feasibility.log` | Run log (clock setting, build, temperature, failures) |
+| `scripts/parverify_run.sh` | Run script (needs sudo; restores the default CPU setting) |
+
 ### `tools/`: source code
 | File | What |
 |---|---|
@@ -94,7 +110,8 @@ Sections 1–9 refer to earlier raw data that isn't included in this folder.
 | `hybrid_client.c` | Benchmark client: pinned certificate + pinned ML-DSA key, end-to-end timing, `RAW=1` per-connection output, `TRACE=1` handshake timeline |
 | `pqc_client.c` | Key-exchange client for the hackathon server (IPv4/IPv6, selectable group) |
 | `sigbench.c` | Signature micro-benchmark (RSA, ECDSA, ML-DSA) |
-| `analyze_1000.py`, `analyze_dyn.py`, `analyze_pair.py` | Statistics used for the reports |
+| `parverify.c` | Multicore feasibility test: classical and PQ halves one after another vs on two cores |
+| `analyze_1000.py`, `analyze_dyn.py`, `analyze_pair.py`, `analyze_multicore.py` | Statistics used for the reports |
 | `md2pdf.py` | Markdown to PDF conversion used for the PDFs |
 
 ## Method notes
