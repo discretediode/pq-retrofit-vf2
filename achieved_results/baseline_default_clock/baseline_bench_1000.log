@@ -1,0 +1,86 @@
+start 2026-11-11T09:09:06Z governor=ondemand temp=45.9C block=50 blocks=20
+  hackathon legacy block 1: Key exchange:     x25519
+  hackathon hybrid block 1: Key exchange:     X25519MLKEM768
+  hackathon hybrid block 2: Key exchange:     X25519MLKEM768
+  hackathon legacy block 2: Key exchange:     x25519
+  hackathon legacy block 3: Key exchange:     x25519
+  hackathon hybrid block 3: Key exchange:     X25519MLKEM768
+  hackathon hybrid block 4: Key exchange:     X25519MLKEM768
+  hackathon legacy block 4: Key exchange:     x25519
+  hackathon legacy block 5: Key exchange:     x25519
+  hackathon hybrid block 5: Key exchange:     X25519MLKEM768
+  hackathon hybrid block 6: Key exchange:     X25519MLKEM768
+  hackathon legacy block 6: Key exchange:     x25519
+  hackathon legacy block 7: Key exchange:     x25519
+  hackathon hybrid block 7: Key exchange:     X25519MLKEM768
+  hackathon hybrid block 8: Key exchange:     X25519MLKEM768
+  hackathon legacy block 8: Key exchange:     x25519
+  hackathon legacy block 9: Key exchange:     x25519
+  hackathon hybrid block 9: Key exchange:     X25519MLKEM768
+  hackathon hybrid block 10: Key exchange:     X25519MLKEM768
+  hackathon legacy block 10: Key exchange:     x25519
+  hackathon legacy block 11: Key exchange:     x25519
+  hackathon hybrid block 11: Key exchange:     X25519MLKEM768
+  hackathon hybrid block 12: Key exchange:     X25519MLKEM768
+  hackathon legacy block 12: Key exchange:     x25519
+  hackathon legacy block 13: Key exchange:     x25519
+  hackathon hybrid block 13: Key exchange:     X25519MLKEM768
+  hackathon hybrid block 14: Key exchange:     X25519MLKEM768
+  hackathon legacy block 14: Key exchange:     x25519
+  hackathon legacy block 15: Key exchange:     x25519
+  hackathon hybrid block 15: Key exchange:     X25519MLKEM768
+  hackathon hybrid block 16: Key exchange:     X25519MLKEM768
+  hackathon legacy block 16: Key exchange:     x25519
+  hackathon legacy block 17: Key exchange:     x25519
+  hackathon hybrid block 17: Key exchange:     X25519MLKEM768
+  hackathon hybrid block 18: Key exchange:     X25519MLKEM768
+  hackathon legacy block 18: Key exchange:     x25519
+  hackathon legacy block 19: Key exchange:     x25519
+  hackathon hybrid block 19: Key exchange:     X25519MLKEM768
+  hackathon hybrid block 20: Key exchange:     X25519MLKEM768
+  hackathon legacy block 20: Key exchange:     x25519
+  own legacy block 1: PQ signature:     none
+  own hybrid block 1: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  own hybrid block 2: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  own legacy block 2: PQ signature:     none
+  own legacy block 3: PQ signature:     none
+  own hybrid block 3: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  own hybrid block 4: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  own legacy block 4: PQ signature:     none
+  own legacy block 5: PQ signature:     none
+  own hybrid block 5: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  own hybrid block 6: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  own legacy block 6: PQ signature:     none
+  own legacy block 7: PQ signature:     none
+  own hybrid block 7: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  own hybrid block 8: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  own legacy block 8: PQ signature:     none
+  own legacy block 9: PQ signature:     none
+  own hybrid block 9: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  own hybrid block 10: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  own legacy block 10: PQ signature:     none
+  own legacy block 11: PQ signature:     none
+  own hybrid block 11: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  own hybrid block 12: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  own legacy block 12: PQ signature:     none
+  own legacy block 13: PQ signature:     none
+  own hybrid block 13: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  own hybrid block 14: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  own legacy block 14: PQ signature:     none
+  own legacy block 15: PQ signature:     none
+  own hybrid block 15: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  own hybrid block 16: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  own legacy block 16: PQ signature:     none
+  own legacy block 17: PQ signature:     none
+  own hybrid block 17: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  own hybrid block 18: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  own legacy block 18: PQ signature:     none
+  own legacy block 19: PQ signature:     none
+  own hybrid block 19: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  own hybrid block 20: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  own legacy block 20: PQ signature:     none
+end 2026-11-11T09:29:05Z governor=ondemand temp=45.7C
+hackathon legacy  1000 measurements
+hackathon hybrid  1000 measurements
+own       legacy  1000 measurements
+own       hybrid  1000 measurements

@@ -1,0 +1,194 @@
+== D1: governor=ondemand min=750000 09:57:45
+   idle temp after 120 s: 46.2 C, idle freq 750000 kHz
+  D1 hackathon legacy block 1: Key exchange:     x25519
+  D1 hackathon hybrid block 1: Key exchange:     X25519MLKEM768
+  D1 hackathon hybrid block 2: Key exchange:     X25519MLKEM768
+  D1 hackathon legacy block 2: Key exchange:     x25519
+  D1 hackathon legacy block 3: Key exchange:     x25519
+  D1 hackathon hybrid block 3: Key exchange:     X25519MLKEM768
+  D1 hackathon hybrid block 4: Key exchange:     X25519MLKEM768
+  D1 hackathon legacy block 4: Key exchange:     x25519
+  D1 hackathon legacy block 5: Key exchange:     x25519
+  D1 hackathon hybrid block 5: Key exchange:     X25519MLKEM768
+  D1 hackathon hybrid block 6: Key exchange:     X25519MLKEM768
+  D1 hackathon legacy block 6: Key exchange:     x25519
+  D1 hackathon legacy block 7: Key exchange:     x25519
+  D1 hackathon hybrid block 7: Key exchange:     X25519MLKEM768
+  D1 hackathon hybrid block 8: Key exchange:     X25519MLKEM768
+  D1 hackathon legacy block 8: Key exchange:     x25519
+  D1 hackathon legacy block 9: Key exchange:     x25519
+  D1 hackathon hybrid block 9: Key exchange:     X25519MLKEM768
+  D1 hackathon hybrid block 10: Key exchange:     X25519MLKEM768
+  D1 hackathon legacy block 10: Key exchange:     x25519
+   hackathon done, temp 46.6 C
+  D1 own legacy block 1: PQ signature:     none
+  D1 own hybrid block 1: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D1 own hybrid block 2: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D1 own legacy block 2: PQ signature:     none
+  D1 own legacy block 3: PQ signature:     none
+  D1 own hybrid block 3: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D1 own hybrid block 4: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D1 own legacy block 4: PQ signature:     none
+  D1 own legacy block 5: PQ signature:     none
+  D1 own hybrid block 5: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D1 own hybrid block 6: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D1 own legacy block 6: PQ signature:     none
+  D1 own legacy block 7: PQ signature:     none
+  D1 own hybrid block 7: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D1 own hybrid block 8: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D1 own legacy block 8: PQ signature:     none
+  D1 own legacy block 9: PQ signature:     none
+  D1 own hybrid block 9: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D1 own hybrid block 10: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D1 own legacy block 10: PQ signature:     none
+   own done, temp 46.9 C
+== D2: governor=ondemand min=1250000 10:12:17
+   idle temp after 120 s: 46.6 C, idle freq 1250000 kHz
+  D2 hackathon legacy block 1: Key exchange:     x25519
+  D2 hackathon hybrid block 1: Key exchange:     X25519MLKEM768
+  D2 hackathon hybrid block 2: Key exchange:     X25519MLKEM768
+  D2 hackathon legacy block 2: Key exchange:     x25519
+  D2 hackathon legacy block 3: Key exchange:     x25519
+  D2 hackathon hybrid block 3: Key exchange:     X25519MLKEM768
+  D2 hackathon hybrid block 4: Key exchange:     X25519MLKEM768
+  D2 hackathon legacy block 4: Key exchange:     x25519
+  D2 hackathon legacy block 5: Key exchange:     x25519
+  D2 hackathon hybrid block 5: Key exchange:     X25519MLKEM768
+  D2 hackathon hybrid block 6: Key exchange:     X25519MLKEM768
+  D2 hackathon legacy block 6: Key exchange:     x25519
+  D2 hackathon legacy block 7: Key exchange:     x25519
+  D2 hackathon hybrid block 7: Key exchange:     X25519MLKEM768
+  D2 hackathon hybrid block 8: Key exchange:     X25519MLKEM768
+  D2 hackathon legacy block 8: Key exchange:     x25519
+  D2 hackathon legacy block 9: Key exchange:     x25519
+  D2 hackathon hybrid block 9: Key exchange:     X25519MLKEM768
+  D2 hackathon hybrid block 10: Key exchange:     X25519MLKEM768
+  D2 hackathon legacy block 10: Key exchange:     x25519
+   hackathon done, temp 46.7 C
+  D2 own legacy block 1: PQ signature:     none
+  D2 own hybrid block 1: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D2 own hybrid block 2: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D2 own legacy block 2: PQ signature:     none
+  D2 own legacy block 3: PQ signature:     none
+  D2 own hybrid block 3: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D2 own hybrid block 4: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D2 own legacy block 4: PQ signature:     none
+  D2 own legacy block 5: PQ signature:     none
+  D2 own hybrid block 5: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D2 own hybrid block 6: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D2 own legacy block 6: PQ signature:     none
+  D2 own legacy block 7: PQ signature:     none
+  D2 own hybrid block 7: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D2 own hybrid block 8: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D2 own legacy block 8: PQ signature:     none
+  D2 own legacy block 9: PQ signature:     none
+  D2 own hybrid block 9: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D2 own hybrid block 10: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D2 own legacy block 10: PQ signature:     none
+   own done, temp 46.9 C
+== D3: governor=schedutil min=312500 10:26:11
+   idle temp after 120 s: 46.3 C, idle freq 1250000 kHz
+  D3 hackathon legacy block 1: Key exchange:     x25519
+  D3 hackathon hybrid block 1: Key exchange:     X25519MLKEM768
+  D3 hackathon hybrid block 2: Key exchange:     X25519MLKEM768
+  D3 hackathon legacy block 2: Key exchange:     x25519
+  D3 hackathon legacy block 3: Key exchange:     x25519
+  D3 hackathon hybrid block 3: Key exchange:     X25519MLKEM768
+  D3 hackathon hybrid block 4: Key exchange:     X25519MLKEM768
+  D3 hackathon legacy block 4: Key exchange:     x25519
+  D3 hackathon legacy block 5: Key exchange:     x25519
+  D3 hackathon hybrid block 5: Key exchange:     X25519MLKEM768
+  D3 hackathon hybrid block 6: Key exchange:     X25519MLKEM768
+  D3 hackathon legacy block 6: Key exchange:     x25519
+  D3 hackathon legacy block 7: Key exchange:     x25519
+  D3 hackathon hybrid block 7: Key exchange:     X25519MLKEM768
+  D3 hackathon hybrid block 8: Key exchange:     X25519MLKEM768
+  D3 hackathon legacy block 8: Key exchange:     x25519
+  D3 hackathon legacy block 9: Key exchange:     x25519
+  D3 hackathon hybrid block 9: Key exchange:     X25519MLKEM768
+  D3 hackathon hybrid block 10: Key exchange:     X25519MLKEM768
+  D3 hackathon legacy block 10: Key exchange:     x25519
+   hackathon done, temp 45.7 C
+  D3 own legacy block 1: PQ signature:     none
+  D3 own hybrid block 1: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D3 own hybrid block 2: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D3 own legacy block 2: PQ signature:     none
+  D3 own legacy block 3: PQ signature:     none
+  D3 own hybrid block 3: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D3 own hybrid block 4: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D3 own legacy block 4: PQ signature:     none
+  D3 own legacy block 5: PQ signature:     none
+  D3 own hybrid block 5: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D3 own hybrid block 6: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D3 own legacy block 6: PQ signature:     none
+  D3 own legacy block 7: PQ signature:     none
+  D3 own hybrid block 7: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D3 own hybrid block 8: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D3 own legacy block 8: PQ signature:     none
+  D3 own legacy block 9: PQ signature:     none
+  D3 own hybrid block 9: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D3 own hybrid block 10: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D3 own legacy block 10: PQ signature:     none
+   own done, temp 46.2 C
+== D4: governor=schedutil min=750000 10:39:31
+   idle temp after 120 s: 46.6 C, idle freq 1250000 kHz
+  D4 hackathon legacy block 1: Key exchange:     x25519
+  D4 hackathon hybrid block 1: Key exchange:     X25519MLKEM768
+  D4 hackathon hybrid block 2: Key exchange:     X25519MLKEM768
+  D4 hackathon legacy block 2: Key exchange:     x25519
+  D4 hackathon legacy block 3: Key exchange:     x25519
+  D4 hackathon hybrid block 3: Key exchange:     X25519MLKEM768
+  D4 hackathon hybrid block 4: Key exchange:     X25519MLKEM768
+  D4 hackathon legacy block 4: Key exchange:     x25519
+  D4 hackathon legacy block 5: Key exchange:     x25519
+  D4 hackathon hybrid block 5: Key exchange:     X25519MLKEM768
+  D4 hackathon hybrid block 6: Key exchange:     X25519MLKEM768
+  D4 hackathon legacy block 6: Key exchange:     x25519
+  D4 hackathon legacy block 7: Key exchange:     x25519
+  D4 hackathon hybrid block 7: Key exchange:     X25519MLKEM768
+  D4 hackathon hybrid block 8: Key exchange:     X25519MLKEM768
+  D4 hackathon legacy block 8: Key exchange:     x25519
+  D4 hackathon legacy block 9: Key exchange:     x25519
+  D4 hackathon hybrid block 9: Key exchange:     X25519MLKEM768
+  D4 hackathon hybrid block 10: Key exchange:     X25519MLKEM768
+  D4 hackathon legacy block 10: Key exchange:     x25519
+   hackathon done, temp 46.6 C
+  D4 own legacy block 1: PQ signature:     none
+  D4 own hybrid block 1: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D4 own hybrid block 2: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D4 own legacy block 2: PQ signature:     none
+  D4 own legacy block 3: PQ signature:     none
+  D4 own hybrid block 3: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D4 own hybrid block 4: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D4 own legacy block 4: PQ signature:     none
+  D4 own legacy block 5: PQ signature:     none
+  D4 own hybrid block 5: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D4 own hybrid block 6: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D4 own legacy block 6: PQ signature:     none
+  D4 own legacy block 7: PQ signature:     none
+  D4 own hybrid block 7: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D4 own hybrid block 8: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D4 own legacy block 8: PQ signature:     none
+  D4 own legacy block 9: PQ signature:     none
+  D4 own hybrid block 9: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D4 own hybrid block 10: PQ signature:     ML-DSA-44 over TLS exporter, binary (verified: yes)
+  D4 own legacy block 10: PQ signature:     none
+   own done, temp 46.1 C
+measurements per config/scenario/mode:
+    500 D1,hackathon,hybrid
+    500 D1,hackathon,legacy
+    500 D1,own,hybrid
+    500 D1,own,legacy
+    500 D2,hackathon,hybrid
+    500 D2,hackathon,legacy
+    500 D2,own,hybrid
+    500 D2,own,legacy
+    500 D3,hackathon,hybrid
+    500 D3,hackathon,legacy
+    500 D3,own,hybrid
+    500 D3,own,legacy
+    500 D4,hackathon,hybrid
+    500 D4,hackathon,legacy
+    500 D4,own,hybrid
+    500 D4,own,legacy
+restored: ondemand min=312500

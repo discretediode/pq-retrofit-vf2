@@ -1,0 +1,14 @@
+
+## Hackathon server (IPv4), TLS handshake time
+mode         n     best       p5   median     mean      p95      p99    worst   stdev
+legacy    1000    31.61    34.80    39.92    45.07    70.84   105.36   524.45   23.45
+hybrid    1000    36.33    39.78    45.08    50.09    76.03   104.35   359.32   18.73
+median difference hybrid - legacy: +5.16 ms (+12.9%)
+per-block median difference over 20 blocks: min -0.93 / median +5.00 / max +10.63 ms; hybrid faster in 1 of 20 blocks
+
+## Own server (LAN), end-to-end time
+mode         n     best       p5   median     mean      p95      p99    worst   stdev
+legacy    1000    14.77    17.62    21.61    21.53    24.35    26.91    31.30    2.29
+hybrid    1000    20.51    22.33    27.95    27.99    31.58    33.84    40.05    2.38
+median difference hybrid - legacy: +6.35 ms (+29.4%)
+per-block median difference over 20 blocks: min +1.46 / median +6.23 / max +8.97 ms; hybrid faster in 0 of 20 blocks
