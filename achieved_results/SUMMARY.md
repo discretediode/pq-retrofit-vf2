@@ -197,3 +197,23 @@ remains slightly slower than legacy (+0.5 ms LAN, +3–4.5 ms internet).
 
 Full reasoning and caveats: `dynamic_cpu_freq/dynamic_cpu_freq_REPORT.md`, section "RECOMMENDATION".
 Not tested: 500/625 MHz minimums, energy use.
+
+## 12. BITMANIP (2026-11-11): RISC-V Zba/Zbb bit-manipulation extensions
+
+OpenSSL rebuilt with `-march=rv64gc_zba_zbb` (no code changes) so GCC uses the U74's single-instruction rotations
+(`rol`/`ror`) and shifted adds (`sh3add`). Full report: `bitmanip_zba_zbb/bitmanip_REPORT.md`.
+
+Crypto at a fixed 1.5 GHz (plain → bitmanip): SHA3-256 / SHAKE-128 **+50 %**, SHA-256 +41 %, ML-KEM-768
+keygen/encaps/decaps **−19 / −13 / −14 %**, ML-DSA-44/65 verify **−15 / −16 %**; RSA, ECDSA and X25519 unchanged.
+
+End-to-end, 1000 runs per mode, default CPU clock, builds alternated block by block:
+
+| Scenario | Plain hybrid | Bitmanip hybrid | Change |
+|---|---|---|---|
+| Own server, full hybrid auth (median) | 28.15 ms | **26.57 ms** | **−1.58 ms (−5.6 %), faster in 20/20 blocks** |
+| Hackathon server, handshake (median) | 46.69 ms | 47.46 ms | no measurable difference (network noise) |
+
+**Conclusion:** the extensions speed up the post-quantum parts (Keccak-heavy) by 13–50 % at zero runtime cost, but
+end-to-end it's −1.6 ms, about 7x less than raising the minimum CPU clock (−11.6 ms). On its own it doesn't meet
+the latency target at the default clock. The combination (bitmanip + min 750 MHz) is the logical next step.
+Caveat: the library then requires a CPU with Zba/Zbb.

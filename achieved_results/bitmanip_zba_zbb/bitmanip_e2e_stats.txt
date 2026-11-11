@@ -1,0 +1,26 @@
+
+## Hackathon server (IPv4), TLS handshake
+config     mode        n     best   median     mean      p95    worst
+BASELINE   legacy   1000    31.61    39.92    45.07    70.84   524.45
+BASELINE   hybrid   1000    36.33    45.08    50.09    76.03   359.32
+plain      legacy   1000    27.40    41.59    51.28   107.76   255.94
+plain      hybrid   1000    36.41    46.69    56.50   107.06   449.24
+bitmanip   legacy   1000    31.04    41.29    48.99    87.79   274.56
+bitmanip   hybrid   1000    34.03    47.46    54.22    90.80   547.64
+legacy  bitmanip vs plain: overall median -0.30 ms (-0.7%); per block median -0.55 ms, range -43.50..+11.27, bitmanip faster in 11/20 blocks
+hybrid  bitmanip vs plain: overall median +0.77 ms (+1.6%); per block median -1.11 ms, range -48.91..+14.89, bitmanip faster in 13/20 blocks
+plain      hybrid - legacy: per block median +4.69 ms, hybrid faster in 2/20 blocks
+bitmanip   hybrid - legacy: per block median +4.62 ms, hybrid faster in 2/20 blocks
+
+## Own server (LAN), end-to-end
+config     mode        n     best   median     mean      p95    worst
+BASELINE   legacy   1000    14.77    21.61    21.53    24.35    31.30
+BASELINE   hybrid   1000    20.51    27.95    27.99    31.58    40.05
+plain      legacy   1000    15.31    21.95    21.92    24.39    31.11
+plain      hybrid   1000    20.06    28.15    28.35    31.88    43.09
+bitmanip   legacy   1000    11.68    21.14    21.20    24.32    33.28
+bitmanip   hybrid   1000    19.19    26.57    26.96    30.58    38.39
+legacy  bitmanip vs plain: overall median -0.81 ms (-3.7%); per block median -0.53 ms, range -4.22..+2.50, bitmanip faster in 15/20 blocks
+hybrid  bitmanip vs plain: overall median -1.58 ms (-5.6%); per block median -1.48 ms, range -5.00..-0.12, bitmanip faster in 20/20 blocks
+plain      hybrid - legacy: per block median +6.55 ms, hybrid faster in 0/20 blocks
+bitmanip   hybrid - legacy: per block median +5.46 ms, hybrid faster in 0/20 blocks

@@ -10,7 +10,7 @@ Two scenarios are measured throughout:
 1. **Hackathon server** (IPv4), TLS handshake time, with server authentication RSA-3072 in both modes
 2. **Own server** on the local network, end-to-end time including full hybrid authentication
 
-Start with **[SUMMARY.md](SUMMARY.md)**; sections 10 and 11 cover the results in this folder.
+Start with **[SUMMARY.md](SUMMARY.md)**; sections 10, 11 and 12 cover the results in this folder.
 
 ## Headline result
 
@@ -23,6 +23,12 @@ Start with **[SUMMARY.md](SUMMARY.md)**; sections 10 and 11 cover the results in
 Raising only the minimum CPU clock (`ondemand` governor, `scaling_min_freq` = 750 MHz) lets hybrid PQC beat the
 legacy baseline for +0.5 °C. Under identical CPU settings hybrid remains slightly slower than legacy
 (+0.5 ms on the LAN, +3–4.5 ms over the internet).
+
+### RISC-V bit-manipulation extensions (Zba/Zbb)
+Rebuilding OpenSSL with `-march=rv64gc_zba_zbb` (no code changes) speeds up SHA-3/SHAKE by 50 %, ML-KEM by 13–19 %
+and ML-DSA verification by 15 %, while classical algorithms are unchanged. End-to-end, full hybrid on the LAN drops
+from 28.15 to 26.57 ms (−5.6 %, faster in 20/20 blocks) at the default clock: a real gain, but about 7x smaller than
+the clock-policy change.
 
 ## Files
 
@@ -53,9 +59,20 @@ Sections 1–9 refer to earlier raw data that isn't included in this folder.
 | `dynamic_cpu_freq_screen_stats.txt` | Screening run statistics |
 | `dynamic_cpu_freq_screen.log` | Screening run per-config log and checks |
 
+### `bitmanip_zba_zbb/`: BITMANIP (RISC-V Zba/Zbb bit-manipulation extensions)
+| File | Contents |
+|---|---|
+| `bitmanip_REPORT.md` | **Report**: plain `rv64gc` vs `-march=rv64gc_zba_zbb` OpenSSL build; micro-benchmarks and 1000-run end-to-end comparison vs the baseline |
+| `bitmanip_micro_fixed1500.txt` | Crypto micro-benchmarks (RSA, ECDSA, ML-DSA, ML-KEM, X25519, SHA-3, SHA-256) for std / opt / bitmanip builds, 2 passes at a fixed 1.5 GHz |
+| `bitmanip_micro_ondemand_UNRELIABLE.txt` | First attempt under the `ondemand` governor; clock noise made it inconsistent. Kept for transparency, not used |
+| `bitmanip_e2e_raw.csv` | End-to-end, all 8000 measurements: `config,scenario,mode,block,run,ms` (config = plain / bitmanip) |
+| `bitmanip_e2e_stats.txt` | Statistics incl. paired per-block comparison and the baseline for reference |
+| `bitmanip_e2e.log` | Per-block log, library linkage of each binary, negotiated group / ML-DSA verification checks |
+
 ## Method notes
 - Every individual measurement is recorded; modes (and, in the confirmation run, CPU settings) alternate in
   blocks of 50 so both see the same network conditions.
 - Every hybrid block was checked: X25519MLKEM768 negotiated and, on the own server, the ML-DSA-44 signature verified.
 - 0 failed connections across all runs in this folder.
+- Bitmanip builds only run on RISC-V CPUs that implement Zba and Zbb (the U74 does).
 - Not measured: energy (temperature used as the proxy); minimum clocks of 500 and 625 MHz.

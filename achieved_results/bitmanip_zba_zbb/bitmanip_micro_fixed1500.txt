@@ -1,0 +1,112 @@
+fixed clock: governor=performance cur=1500000 kHz temp=47.105C
+
+==================== PASS 1
+governor=performance min=312500
+
+########## std (/opt/openssl-3.5)
+## sigbench (sign/verify per operation)
+RSA-3072    sign   34.079 ms   verify    0.647 ms   signature   384 bytes
+ECDSA-P256  sign    5.721 ms   verify    4.086 ms   signature    70 bytes
+ML-DSA-44   sign    4.902 ms   verify    0.985 ms   signature  2420 bytes
+ML-DSA-65   sign    7.852 ms   verify    1.577 ms   signature  3309 bytes
+## KEM (keygen / encaps / decaps per operation)
+                 ML-KEM-768 0.000453s 0.000356s 0.000529s    2208.4    2808.3    1889.3
+             X25519MLKEM768 0.000713s 0.000888s 0.000823s    1402.3    1125.8    1215.3
+## X25519 key exchange (op/s)
+ 253 bits ecdh (X25519)   0.0003s   3715.0
+## SHA3-256 / SHAKE-128 throughput (1024-byte blocks, kB/s)
+sha3-256         32530.77k
+shake128         37664.77k
+## SHA-256 throughput (1024-byte blocks, kB/s)
+sha256           31446.36k
+
+########## opt (/home/user/openssl-3.5-opt)
+## sigbench (sign/verify per operation)
+RSA-3072    sign   34.062 ms   verify    0.643 ms   signature   384 bytes
+ECDSA-P256  sign    0.636 ms   verify    1.413 ms   signature    72 bytes
+ML-DSA-44   sign    4.796 ms   verify    0.987 ms   signature  2420 bytes
+ML-DSA-65   sign    7.420 ms   verify    1.578 ms   signature  3309 bytes
+## KEM (keygen / encaps / decaps per operation)
+                 ML-KEM-768 0.000454s 0.000356s 0.000530s    2202.7    2805.3    1888.3
+             X25519MLKEM768 0.000715s 0.000891s 0.000823s    1399.3    1122.3    1214.7
+## X25519 key exchange (op/s)
+ 253 bits ecdh (X25519)   0.0003s   3715.7
+## SHA3-256 / SHAKE-128 throughput (1024-byte blocks, kB/s)
+sha3-256         32800.88k
+shake128         37609.47k
+## SHA-256 throughput (1024-byte blocks, kB/s)
+sha256           31606.10k
+
+########## bitmanip (/home/user/openssl-3.5-bitmanip)
+## sigbench (sign/verify per operation)
+RSA-3072    sign   34.258 ms   verify    0.643 ms   signature   384 bytes
+ECDSA-P256  sign    0.639 ms   verify    1.427 ms   signature    72 bytes
+ML-DSA-44   sign    4.055 ms   verify    0.836 ms   signature  2420 bytes
+ML-DSA-65   sign    6.850 ms   verify    1.319 ms   signature  3309 bytes
+## KEM (keygen / encaps / decaps per operation)
+                 ML-KEM-768 0.000367s 0.000309s 0.000455s    2723.0    3236.8    2196.0
+             X25519MLKEM768 0.000630s 0.000847s 0.000749s    1588.0    1180.7    1335.7
+## X25519 key exchange (op/s)
+ 253 bits ecdh (X25519)   0.0003s   3711.7
+## SHA3-256 / SHAKE-128 throughput (1024-byte blocks, kB/s)
+sha3-256         49088.17k
+shake128         56692.39k
+## SHA-256 throughput (1024-byte blocks, kB/s)
+sha256           44483.24k
+MICRO_DONE
+
+==================== PASS 2
+governor=performance min=312500
+
+########## std (/opt/openssl-3.5)
+## sigbench (sign/verify per operation)
+RSA-3072    sign   34.071 ms   verify    0.646 ms   signature   384 bytes
+ECDSA-P256  sign    5.722 ms   verify    4.162 ms   signature    71 bytes
+ML-DSA-44   sign    4.948 ms   verify    0.986 ms   signature  2420 bytes
+ML-DSA-65   sign    7.538 ms   verify    1.576 ms   signature  3309 bytes
+## KEM (keygen / encaps / decaps per operation)
+                 ML-KEM-768 0.000454s 0.000356s 0.000529s    2201.3    2808.7    1889.7
+             X25519MLKEM768 0.000714s 0.000889s 0.000823s    1399.7    1125.1    1215.0
+## X25519 key exchange (op/s)
+ 253 bits ecdh (X25519)   0.0003s   3720.1
+## SHA3-256 / SHAKE-128 throughput (1024-byte blocks, kB/s)
+sha3-256         32587.43k
+shake128         37614.93k
+## SHA-256 throughput (1024-byte blocks, kB/s)
+sha256           31481.86k
+
+########## opt (/home/user/openssl-3.5-opt)
+## sigbench (sign/verify per operation)
+RSA-3072    sign   34.069 ms   verify    0.643 ms   signature   384 bytes
+ECDSA-P256  sign    0.637 ms   verify    1.413 ms   signature    71 bytes
+ML-DSA-44   sign    4.401 ms   verify    0.988 ms   signature  2420 bytes
+ML-DSA-65   sign    7.557 ms   verify    1.586 ms   signature  3309 bytes
+## KEM (keygen / encaps / decaps per operation)
+                 ML-KEM-768 0.000455s 0.000356s 0.000529s    2196.7    2809.4    1889.7
+             X25519MLKEM768 0.000717s 0.000892s 0.000823s    1395.3    1121.3    1215.3
+## X25519 key exchange (op/s)
+ 253 bits ecdh (X25519)   0.0003s   3714.0
+## SHA3-256 / SHAKE-128 throughput (1024-byte blocks, kB/s)
+sha3-256         32675.16k
+shake128         37652.14k
+## SHA-256 throughput (1024-byte blocks, kB/s)
+sha256           31550.46k
+
+########## bitmanip (/home/user/openssl-3.5-bitmanip)
+## sigbench (sign/verify per operation)
+RSA-3072    sign   34.314 ms   verify    0.636 ms   signature   384 bytes
+ECDSA-P256  sign    0.638 ms   verify    1.428 ms   signature    70 bytes
+ML-DSA-44   sign    4.262 ms   verify    0.836 ms   signature  2420 bytes
+ML-DSA-65   sign    7.798 ms   verify    1.320 ms   signature  3309 bytes
+## KEM (keygen / encaps / decaps per operation)
+                 ML-KEM-768 0.000367s 0.000310s 0.000456s    2727.3    3223.7    2195.3
+             X25519MLKEM768 0.000629s 0.000847s 0.000748s    1589.0    1181.0    1336.3
+## X25519 key exchange (op/s)
+ 253 bits ecdh (X25519)   0.0003s   3711.7
+## SHA3-256 / SHAKE-128 throughput (1024-byte blocks, kB/s)
+sha3-256         49407.49k
+shake128         56754.60k
+## SHA-256 throughput (1024-byte blocks, kB/s)
+sha256           44477.78k
+MICRO_DONE
+restored: ondemand min=312500 temp=54.473C
