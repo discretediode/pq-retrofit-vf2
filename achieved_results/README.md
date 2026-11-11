@@ -25,6 +25,7 @@ achieved_results/
 ├── bitmanip_zba_zbb/               APPROACH 2: RISC-V Zba/Zbb bit-manipulation extensions
 ├── multicore/                      APPROACH 3: classical and PQ halves on separate CPU cores
 ├── combined_all_approaches/        ALL THREE APPROACHES COMBINED vs the baseline (final result)
+├── study_guide/                    team study guide: background, design, results, limits, practice Q&A
 └── tools/                          source code of clients, server, benchmarks and analysis scripts
 ```
 
@@ -133,6 +134,13 @@ Sections 1–9 refer to earlier raw data that isn't included in this folder.
 | `combined_stats.txt` | Statistics: best / median / mean / p95 / worst, paired per-block comparisons, target check |
 | `combined.log` | Run log: per-block verification checks, failures (0), temperatures |
 | `scripts/bench_combined.sh` | Benchmark script (needs sudo; restores the default CPU setting) |
+
+### `study_guide/`: team study guide (presentation prep)
+| File | Contents |
+|---|---|
+| `study_guide.pdf` | **Read this on GitHub**: the whole guide with all practice answers shown (21 pages) |
+| `study_guide.html` | Interactive version: download it and open it in a browser; tick the questions you know (saved in your browser) |
+| `README.md` | What the guide covers and how to use it |
 
 ### `tools/`: source code
 | File | What |

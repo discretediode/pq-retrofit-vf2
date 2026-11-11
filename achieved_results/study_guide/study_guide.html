@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Post-Quantum Retrofit Prep</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,750&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: sticky contents rail on the left (desktop), one reading column; stacks on phones. Palette: circuit-board green on cool grey. */
+:root {
+  --bg: #f3f5f4;
+  --surface: #ffffff;
+  --fg: #15211c;
+  --muted: #56645e;
+  --line: #d6ddd9;
+  --accent: #0d7356;
+  --accent-soft: #e0f0ea;
+  --warn: #9a5b00;
+  --warn-soft: #fbf0dc;
+  --bar-legacy: #8a9690;
+  --font-display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1613; --surface: #17201c; --fg: #e3ebe7; --muted: #9aaba3; --line: #2a3832;
+    --accent: #4cc39b; --accent-soft: #173229; --warn: #e5a94a; --warn-soft: #33270f; --bar-legacy: #6d7a74;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1613; --surface: #17201c; --fg: #e3ebe7; --muted: #9aaba3; --line: #2a3832;
+  --accent: #4cc39b; --accent-soft: #173229; --warn: #e5a94a; --warn-soft: #33270f; --bar-legacy: #6d7a74;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font: 16px/1.62 var(--font-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 32px 64px;
+}
+.wrap { max-width: 1120px; margin: 0 auto; display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 48px; }
+nav.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 24px); align-self: start; font-size: 14px; }
+nav.toc p { font: 600 12px/1 var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 12px; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; counter-reset: s; }
+nav.toc a { color: var(--fg); text-decoration: none; display: block; padding: 4px 8px; border-radius: 6px; }
+nav.toc a:hover, nav.toc a:focus-visible { background: var(--accent-soft); color: var(--accent); outline: none; }
+main { min-width: 0; max-width: 72ch; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; line-height: 1.15; }
+h1 { font-size: clamp(32px, 5vw, 46px); font-weight: 750; margin: 0 0 12px; letter-spacing: -.01em; }
+h2 { font-size: 28px; font-weight: 750; margin: 0 0 16px; }
+h3 { font-size: 19px; font-weight: 600; margin: 28px 0 8px; }
+section { padding-top: 40px; margin-top: 40px; border-top: 1px solid var(--line); }
+.eyebrow { font: 600 12px/1 var(--font-body); letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin: 0 0 10px; }
+.lede { font-size: 18px; color: var(--muted); margin: 0; }
+p { margin: 0 0 14px; }
+ul, ol { padding-left: 22px; margin: 0 0 14px; }
+li { margin-bottom: 6px; }
+code, .mono { font-family: var(--font-mono); font-size: .9em; }
+strong { font-weight: 600; }
+.say {
+  background: var(--accent-soft); border-left: 3px solid var(--accent);
+  padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 18px 0;
+}
+.say b { display: block; font: 600 12px/1 var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+.say p:last-child { margin: 0; }
+.trap { background: var(--warn-soft); border-left: 3px solid var(--warn); padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 18px 0; }
+.trap b { display: block; font: 600 12px/1 var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--warn); margin-bottom: 8px; }
+.trap p:last-child { margin: 0; }
+.tbl { overflow-x: auto; margin: 16px 0 20px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-weight: 600; color: var(--muted); font-size: 13px; white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+td.n { font-family: var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+tr.hi td { background: var(--accent-soft); font-weight: 600; }
+.pitch { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; margin-top: 24px; }
+.pitch p { font-size: 17px; }
+.pitch p:last-child { margin: 0; }
+/* bar chart */
+.bars { display: grid; gap: 10px; margin: 18px 0 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 18px; }
+.bar { display: grid; grid-template-columns: minmax(120px, 210px) minmax(0, 1fr); gap: 12px; align-items: center; font-size: 14px; }
+.track { position: relative; height: 26px; }
+.fill { height: 100%; background: var(--accent); border-radius: 3px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; color: var(--surface); font: 500 13px/1 var(--font-mono); }
+.fill.legacy { background: var(--bar-legacy); }
+.refline { position: absolute; top: -6px; bottom: -6px; width: 0; border-left: 2px dashed var(--warn); }
+.axisnote { font-size: 13px; color: var(--muted); margin: 0 0 16px; }
+/* quiz */
+.qtools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 8px 0 18px; }
+button { font: 500 14px/1 var(--font-body); padding: 9px 14px; border-radius: 7px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer; }
+button:hover { border-color: var(--accent); color: var(--accent); }
+button:focus-visible, summary:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.score { font: 500 14px/1 var(--font-mono); color: var(--muted); }
+.qcat { font: 600 12px/1 var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 26px 0 10px; }
+.q { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; margin-bottom: 8px; }
+.q summary { cursor: pointer; padding: 13px 16px; font-weight: 500; list-style: none; display: flex; gap: 12px; align-items: baseline; }
+.q summary::-webkit-details-marker { display: none; }
+.q summary::before { content: "+"; font-family: var(--font-mono); color: var(--accent); flex: none; }
+.q[open] summary::before { content: "−"; }
+.q .a { padding: 0 16px 14px 38px; }
+.q .a p:last-of-type { margin-bottom: 10px; }
+.q label { font-size: 13px; color: var(--muted); display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+.q.known { border-color: var(--accent); }
+.q.known summary { color: var(--muted); }
+dl.gloss { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px 18px; margin: 0; }
+dl.gloss dt { font-family: var(--font-mono); font-size: 14px; font-weight: 500; }
+dl.gloss dd { margin: 0; }
+pre.mermaid { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px; overflow-x: auto; }
+@media (max-width: 820px) {
+  .wrap { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  nav.toc { position: static; }
+  nav.toc ol { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  dl.gloss { grid-template-columns: minmax(0, 1fr); }
+  dl.gloss dd { margin-bottom: 8px; }
+  .bar { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+html { scroll-behavior: smooth; }
+</style>
+
+</head><body>
+<div class="wrap">
+<nav class="toc" aria-label="Contents">
+  <p>Study order</p>
+  <ol>
+    <li><a href="#pitch">The pitch</a></li>
+    <li><a href="#why">Why post-quantum</a></li>
+    <li><a href="#tls">How TLS works</a></li>
+    <li><a href="#algos">The algorithms</a></li>
+    <li><a href="#hybrid">Why hybrid</a></li>
+    <li><a href="#board">The board</a></li>
+    <li><a href="#built">What you built</a></li>
+    <li><a href="#method">How you measured</a></li>
+    <li><a href="#approaches">Three speed-ups</a></li>
+    <li><a href="#results">Final results</a></li>
+    <li><a href="#costs">Memory, bytes, heat</a></li>
+    <li><a href="#limits">Limits</a></li>
+    <li><a href="#quiz">Practice questions</a></li>
+    <li><a href="#glossary">Glossary</a></li>
+  </ol>
+</nav>
+
+<main>
+<header>
+  <p class="eyebrow">FOCAL SEMICON · Post-Quantum Retrofit · Embedded Linux track</p>
+  <h1>Know your project, start to finish</h1>
+  <p class="lede">Read top to bottom once. Each section ends with a line you can say out loud. Then use the practice questions to test yourself.</p>
+</header>
+
+<!-- 1 -->
+<section id="pitch">
+  <p class="eyebrow">Start here</p>
+  <h2>The 60-second pitch</h2>
+  <div class="pitch">
+    <p>"Quantum computers will break the public-key cryptography in today's TLS: RSA, ECDH and ECDSA. I retrofitted a RISC-V board, the StarFive VisionFive 2, to use <strong>hybrid post-quantum TLS 1.3</strong>: ML-KEM-768 plus X25519 for the key exchange, and ML-DSA-44 plus ECDSA in place of RSA for server authentication."</p>
+    <p>"At the board's default settings, hybrid was about 30% slower than the legacy connection. I found three software-only fixes: raising the minimum CPU clock, compiling with the RISC-V bit-manipulation extensions, and checking the post-quantum signature on a second core. With all three, the full hybrid connection takes <strong>14.5 ms vs 21.0 ms for the legacy baseline, 31% faster</strong>. Against the hackathon server it's 7% faster. That's 1000 runs per mode, 0 failures, and only +1.3 °C at idle."</p>
+  </div>
+  <div class="say"><b>If you only remember one thing</b><p>Hybrid PQC is now faster than the old legacy baseline on this board, and I got there without new hardware.</p></div>
+</section>
+
+<!-- 2 -->
+<section id="why">
+  <p class="eyebrow">Foundations</p>
+  <h2>Why post-quantum, and why now</h2>
+  <p>Today's public-key cryptography rests on two hard maths problems: <strong>factoring</strong> large numbers (RSA) and the <strong>discrete logarithm</strong> on elliptic curves (ECDH, X25519, ECDSA). A large quantum computer running <strong>Shor's algorithm</strong> solves both efficiently. That breaks every public-key algorithm in a normal TLS connection.</p>
+  <p>Symmetric cryptography (AES, SHA-2/3) is only weakened, by <strong>Grover's algorithm</strong>, which roughly halves the security level. AES-256 stays safe. That's why the retrofit only touches the public-key parts.</p>
+  <h3>Harvest now, decrypt later</h3>
+  <p>An attacker can record encrypted traffic today and decrypt it once a quantum computer exists. So the <strong>key exchange</strong> is urgent now: any data that must stay secret for years is already at risk. <strong>Authentication</strong> is less urgent: a forged signature only helps an attacker during a live connection, so it must be fixed before quantum computers arrive, but old recordings can't be attacked that way.</p>
+  <h3>Why embedded devices matter</h3>
+  <p>Industrial and IoT devices stay in the field for 10–20 years. A device shipped today will still be running when quantum attacks may be practical. Embedded CPUs are slow, so the worry is that PQC makes connections too slow. That's exactly what this project tests.</p>
+  <div class="say"><b>Say it</b><p>"Shor's algorithm breaks RSA and elliptic curves. Recorded traffic can be decrypted later, so the key exchange has to move to post-quantum now, and long-lived embedded devices have to move first."</p></div>
+</section>
+
+<!-- 3 -->
+<section id="tls">
+  <p class="eyebrow">Foundations</p>
+  <h2>How a TLS 1.3 connection works</h2>
+  <p>A TLS handshake does two separate jobs. Keep them apart in your head, because the project upgrades each one differently.</p>
+  <ol>
+    <li><strong>Key exchange:</strong> both sides agree on a shared secret that nobody listening can work out. Legacy uses X25519 (elliptic-curve Diffie–Hellman).</li>
+    <li><strong>Authentication:</strong> the server proves it is the real server, by signing the handshake with the private key that belongs to its certificate. The hackathon server uses RSA-3072.</li>
+  </ol>
+  <pre class="mermaid">
+sequenceDiagram
+    participant C as Board (client)
+    participant S as Server
+    C->>S: ClientHello + key share (X25519 + ML-KEM public key)
+    S->>C: ServerHello + key share (X25519 + ML-KEM ciphertext)
+    Note over C,S: Shared secret known. Everything below is encrypted.
+    S->>C: Certificate (ECDSA) + ML-DSA signature in extension 0xFE20
+    S->>C: CertificateVerify (ECDSA signature over the handshake)
+    S->>C: Finished
+    Note over C: Core 1 checks ECDSA, core 2 checks ML-DSA, at the same time
+    C->>S: Finished, then HTTP request
+    S->>C: HTTP response
+  </pre>
+  <p>TLS 1.3 needs <strong>one round trip</strong> before the client can send data. That's why the internet round-trip time (about 25–35 ms to the hackathon server) dominates there, while on the local network (about 1 ms) the CPU time of the crypto dominates. That second case is the hardest test for PQC.</p>
+  <div class="say"><b>Say it</b><p>"TLS does two jobs: key exchange and authentication. I made both hybrid: ML-KEM with X25519 for the key, and ML-DSA with ECDSA for the server's identity."</p></div>
+</section>
+
+<!-- 4 -->
+<section id="algos">
+  <p class="eyebrow">Foundations</p>
+  <h2>The algorithms, side by side</h2>
+  <p><strong>ML-KEM</strong> (FIPS 203, formerly CRYSTALS-Kyber) and <strong>ML-DSA</strong> (FIPS 204, formerly CRYSTALS-Dilithium) were standardised by NIST in August 2024. Both are <strong>lattice-based</strong>: their security rests on the Module Learning With Errors problem, solving noisy linear equations over polynomials, which no known quantum algorithm solves efficiently.</p>
+  <p>They work on polynomials with 256 coefficients, modulo a small prime: q = 3329 for ML-KEM and q = 8380417 for ML-DSA. The heavy work is polynomial multiplication via the <strong>NTT</strong> (a number-theoretic FFT) and generating matrices with <strong>SHAKE / Keccak</strong> hashing. That's why the SHA-3 speed-up from bit manipulation helped them so much.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Algorithm</th><th>Job</th><th>Quantum-safe?</th><th>Sizes</th><th>Cost on the board (1.5 GHz)</th></tr></thead>
+    <tbody>
+      <tr><td>X25519</td><td>Key exchange</td><td>No</td><td class="n">32 B key</td><td>very cheap</td></tr>
+      <tr><td><strong>ML-KEM-768</strong></td><td>Key exchange (KEM)</td><td>Yes</td><td class="n">1184 B pub key, 1088 B ciphertext</td><td class="n">keygen+decaps ≈ 3 ms (hybrid)</td></tr>
+      <tr><td>RSA-3072</td><td>Signature</td><td>No</td><td class="n">384 B sig</td><td class="n">sign 34 ms, verify 0.65 ms</td></tr>
+      <tr><td>ECDSA P-256</td><td>Signature</td><td>No</td><td class="n">≈71 B sig</td><td class="n">verify 4.1 → 1.4 ms (opt build)</td></tr>
+      <tr><td><strong>ML-DSA-44</strong></td><td>Signature</td><td>Yes</td><td class="n">1312 B pub key, 2420 B sig</td><td class="n">sign 4.7 ms, verify 1.0 ms</td></tr>
+      <tr><td>ML-DSA-65</td><td>Signature</td><td>Yes</td><td class="n">3309 B sig</td><td class="n">verify 1.6 ms</td></tr>
+    </tbody>
+  </table></div>
+  <h3>KEM vs Diffie–Hellman</h3>
+  <p>A <strong>KEM</strong> (key encapsulation mechanism) works differently from Diffie–Hellman. The client generates a key pair and sends the public key. The server <em>encapsulates</em>: it creates a random secret and locks it with that public key, sending back the ciphertext. The client <em>decapsulates</em> with its private key. Both now hold the same 32-byte secret. It still fits in one round trip, inside the normal key-share fields.</p>
+  <h3>Why ML-DSA-44 and not ML-DSA-65</h3>
+  <p>ML-DSA-44 is NIST security category 2, a match for P-256's roughly 128-bit classical strength. The IETF composite-signature draft pairs it with P-256 for the same reason. It's also smaller (2420 vs 3309 B) and verifies faster (1.0 vs 1.6 ms). Switching saved 1.6 ms.</p>
+  <div class="say"><b>Say it</b><p>"ML-KEM and ML-DSA are the NIST lattice standards from 2024. ML-KEM-768 is category 3, ML-DSA-44 is category 2, matched to P-256."</p></div>
+</section>
+
+<!-- 5 -->
+<section id="hybrid">
+  <p class="eyebrow">Foundations</p>
+  <h2>Why hybrid instead of pure PQC</h2>
+  <p>The new algorithms are young. If someone finds a classical attack on ML-KEM next year, a pure-PQC system would be broken today. Hybrid combines a classical and a post-quantum algorithm so that <strong>an attacker has to break both</strong>:</p>
+  <ul>
+    <li><strong>Hybrid key exchange (X25519MLKEM768):</strong> the two shared secrets are concatenated and fed into TLS's key schedule. The session key stays safe as long as <em>either</em> half holds. This is the same group Chrome, Firefox and Cloudflare already use by default.</li>
+    <li><strong>Hybrid authentication (dual signature):</strong> the client accepts the server only if <em>both</em> the ECDSA and the ML-DSA signatures verify. A forger must break both.</li>
+  </ul>
+  <p>Hybrid is also the transition path regulators recommend (for example Germany's BSI and France's ANSSI), and it keeps the classical algorithms that certifications still require.</p>
+  <div class="say"><b>Say it</b><p>"Hybrid means an attacker must break both the classical and the post-quantum part. If ML-KEM turns out weak, X25519 still protects us, and the reverse."</p></div>
+</section>
+
+<!-- 6 -->
+<section id="board">
+  <p class="eyebrow">Your hardware</p>
+  <h2>The StarFive VisionFive 2</h2>
+  <ul>
+    <li><strong>SoC:</strong> StarFive JH7110, 4 × SiFive U74 cores, <strong>RV64GC</strong>, up to 1.5 GHz, Debian Linux.</li>
+    <li><strong>No vector unit</strong> (no RVV), so no wide SIMD for the NTT. It does support the <strong>Zba and Zbb</strong> bit-manipulation extensions, which the default compiler settings don't use.</li>
+    <li><strong>All 4 cores share one clock</strong> (one frequency policy). You can't run one core fast and the others slow.</li>
+    <li><strong>Default clock policy:</strong> the <code>ondemand</code> governor, lowest step 312.5 MHz. It raises the clock only after it notices load.</li>
+    <li><strong>Hailo-8L:</strong> an int8 neural-network accelerator over PCIe. It wasn't detected on the board, and the analysis says it wouldn't help anyway (see the questions).</li>
+    <li>Connected to the Mac by USB serial console and Ethernet. The board reaches the internet through the Mac.</li>
+  </ul>
+  <div class="say"><b>Say it</b><p>"Four in-order RISC-V cores, no vector unit, one shared clock. So the tools I had were the clock policy, the compiler and the spare cores."</p></div>
+</section>
+
+<!-- 7 -->
+<section id="built">
+  <p class="eyebrow">Your work</p>
+  <h2>What you built</h2>
+  <h3>1. A modern TLS library on the board</h3>
+  <p>Debian ships OpenSSL 3.0.9, which has no ML-KEM or ML-DSA. You built <strong>OpenSSL 3.5.9</strong> (the long-term-support release with both algorithms built in) from source on the board, in a separate folder so the system library stays untouched. Three builds:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Build</th><th>Change</th><th>Effect</th></tr></thead>
+    <tbody>
+      <tr><td>std</td><td>plain OpenSSL 3.5.9</td><td>ECDSA verify slow (4.1 ms): generic C code on RISC-V</td></tr>
+      <tr><td>opt</td><td><code>enable-ec_nistp_64_gcc_128</code></td><td>Fast, constant-time P-256 code: ECDSA verify 4.1 → 1.4 ms</td></tr>
+      <tr><td>bitmanip</td><td>opt + <code>-march=rv64gc_zba_zbb</code></td><td>SHA-3 +50%, ML-KEM −13 to −19%, ML-DSA verify −15%</td></tr>
+    </tbody>
+  </table></div>
+  <h3>2. Hybrid key exchange</h3>
+  <p>The client asks for the TLS group <code>X25519MLKEM768</code>. Against the hackathon server, its reply <code>"handshake_method":"hybrid-pqc"</code> confirmed it.</p>
+  <h3>3. Hybrid authentication, two versions</h3>
+  <p>The hackathon server only signs with RSA, so you wrote your own test server (on the Mac). It has an RSA certificate for legacy clients and an ECDSA certificate plus ML-DSA keys for hybrid clients. Both modes were measured against this same server, so the comparison is fair.</p>
+  <ul>
+    <li><strong>v1:</strong> after the handshake, the server signs a value unique to this connection (the TLS exporter) with ML-DSA and sends it with the first HTTP response. It works and needs no extra round trip, but the check can only start after the handshake, so it adds time.</li>
+    <li><strong>v2 (final):</strong> the ML-DSA signature travels <em>inside the Certificate message</em> as a custom TLS extension (<code>0xFE20</code>). It signs a hash of the ClientHello and ServerHello, which contain both sides' random values and key shares, so it can't be replayed in another connection. Because it arrives together with the ECDSA signature, the board checks <strong>both at the same time on two cores</strong>.</li>
+  </ul>
+  <h3>4. Trust model</h3>
+  <p>The client <strong>pins</strong> the server's certificate and ML-DSA public key, instead of trusting a public certificate authority. That's fine for a closed device fleet. For the open internet you'd use a PKI with post-quantum certificates (see Limits).</p>
+  <h3>Security checks you ran</h3>
+  <p>A wrong ML-DSA key is rejected. A missing ML-DSA signature is rejected. A wrong server certificate is rejected. The client never sends application data until both signatures have passed.</p>
+  <div class="say"><b>Say it</b><p>"I built OpenSSL 3.5 on the board. The key exchange is the standard X25519MLKEM768 group. For authentication I added an ML-DSA-44 signature next to ECDSA, inside the TLS handshake, bound to that exact connection, and both must pass."</p></div>
+</section>
+
+<!-- 8 -->
+<section id="method">
+  <p class="eyebrow">Your evidence</p>
+  <h2>How you measured</h2>
+  <ul>
+    <li><strong>Baseline</strong> = the original legacy connection, X25519 + RSA-3072, at the board's default CPU setting.</li>
+    <li><strong>1000 connections per mode.</strong> Each comparison ran in 20 blocks of 50, alternating which mode goes first. Network changes or chip temperature then affect both modes equally.</li>
+    <li><strong>Median</strong> as the headline number, because internet tails are huge (worst cases up to 524 ms from one network hiccup). The mean would be dragged around by a few outliers. Best, worst, p95 and mean are all in the reports too.</li>
+    <li><strong>Paired blocks:</strong> in each block the two modes are compared directly. "Faster in 20/20 blocks" is very strong evidence. If there were no real difference, the chance of that is about 1 in a million. 17/20 corresponds to p ≈ 0.003.</li>
+    <li><strong>Two scenarios:</strong> your own server on the local network (crypto dominates, the hard case) and the hackathon server over the internet (the network dominates, the realistic case).</li>
+    <li><strong>Micro-benchmarks at a fixed 1.5 GHz.</strong> Under <code>ondemand</code> the clock changed between runs and timings varied 2×. That noisy file is kept and labelled unreliable.</li>
+    <li><strong>Every run checked:</strong> the hybrid group was actually negotiated, and ML-DSA actually verified. 0 failures.</li>
+  </ul>
+  <div class="trap"><b>Watch out</b><p>The very first numbers (165 ms legacy vs 64–79 ms hybrid) were wrong: a local relay program added its own connection time to the legacy runs. If asked, say you caught it, fixed it, and that's why you switched to large, alternating, paired runs.</p></div>
+  <div class="say"><b>Say it</b><p>"1000 runs per mode, alternated in blocks so both modes saw the same conditions. I report medians and the number of blocks where one mode won."</p></div>
+</section>
+
+<!-- 9 -->
+<section id="approaches">
+  <p class="eyebrow">Your solution</p>
+  <h2>The three speed-ups, and why each works</h2>
+  <p>At the default setting, hybrid was <strong>27.95 ms vs 21.61 ms legacy</strong> (+29%) on your server, and +13% on the hackathon server. Each fix attacks a different cause.</p>
+
+  <h3>Approach 1: Raise the minimum CPU clock (biggest win)</h3>
+  <p><strong>Problem:</strong> <code>ondemand</code> lets the CPU idle at 312.5 MHz and only speeds up after it notices load. A handshake is a 20 ms burst, so it's mostly over before the clock ramps up. The crypto runs at a fifth of full speed.</p>
+  <p><strong>Fix:</strong> keep <code>ondemand</code> (still saves power) but raise <code>scaling_min_freq</code> to <strong>750 MHz</strong>. One settings change, no code.</p>
+  <p><strong>Why 750 MHz:</strong> you tested 750 and 1250 MHz minimums, the <code>schedutil</code> governor, and full speed. 750 MHz was as fast as 1250 MHz but cooler (+0.5 °C idle vs +1.9 °C). Fixed 1.5 GHz is fastest but runs about +6 °C hotter, which you saw heat the chip. <code>schedutil</code> at the default minimum was <em>worse</em> than the default.</p>
+  <p><strong>Result alone:</strong> hybrid 27.84 → 16.19 ms (own server).</p>
+
+  <h3>Approach 2: RISC-V bit-manipulation extensions</h3>
+  <p><strong>Problem:</strong> the U74 supports Zba and Zbb, but standard builds target plain RV64GC. Without them a 64-bit rotate takes three instructions (shift left, shift right, OR).</p>
+  <p><strong>Fix:</strong> recompile OpenSSL with <code>-march=rv64gc_zba_zbb</code>. No code changes. The compiler uses single-instruction rotates (<code>rol</code>/<code>ror</code>), <code>andn</code>, and shifted adds (<code>sh3add</code>).</p>
+  <p><strong>Why it helps PQC:</strong> Keccak (SHA-3/SHAKE) is mostly 64-bit rotations and AND-NOT. ML-KEM and ML-DSA spend much of their time in SHAKE. So SHA-3 got 50% faster and ML-KEM 13–19% faster. RSA, ECDSA and X25519 didn't change.</p>
+  <p><strong>Result alone:</strong> hybrid 28.15 → 26.57 ms (−5.6%, 20/20 blocks). Small, but free.</p>
+  <p><strong>Catch:</strong> the binary only runs on CPUs with Zba/Zbb.</p>
+
+  <h3>Approach 3: Use a second core</h3>
+  <p><strong>Problem:</strong> hybrid authentication does two independent checks (ECDSA and ML-DSA), but normally one after another on one core while three cores sit idle.</p>
+  <p><strong>Feasibility test first:</strong> a separate program timed each pair of classical and PQ operations, on one core vs two. The result was 1.5–1.65× faster, and client crypto went from 16.0 to 10.1 ms at the default clock. It uses a <strong>persistent worker thread</strong>, because creating a new thread per operation costs too much.</p>
+  <p><strong>Into the real handshake:</strong> that's why v2 moved the ML-DSA signature into the Certificate message. When it arrives, a worker thread on core 2 verifies ML-DSA while OpenSSL verifies ECDSA on core 1.</p>
+  <p><strong>Result alone:</strong> hybrid 28.19 → 24.57 ms (−12.8%, 20/20 blocks), no extra heat.</p>
+  <p><strong>Why not 4 cores:</strong> there are only two independent checks. The rest of the handshake is a strict sequence (Amdahl's law).</p>
+
+  <h3>How they add up (own server, hybrid median)</h3>
+  <div class="bars" role="img" aria-label="Hybrid median: baseline 27.95 ms, bitmanip 26.57, second core 24.57, 750 MHz 16.19, all three 14.47; legacy baseline 21.04 ms">
+    <div class="bar"><span>Legacy baseline</span><div class="track"><div class="fill legacy" style="width:70.13%">21.04</div></div></div>
+    <div class="bar"><span>Hybrid, baseline setup</span><div class="track"><div class="fill" style="width:93.17%">27.95</div><div class="refline" style="left:70.13%"></div></div></div>
+    <div class="bar"><span>+ bitmanip only</span><div class="track"><div class="fill" style="width:88.57%">26.57</div><div class="refline" style="left:70.13%"></div></div></div>
+    <div class="bar"><span>+ second core only</span><div class="track"><div class="fill" style="width:81.90%">24.57</div><div class="refline" style="left:70.13%"></div></div></div>
+    <div class="bar"><span>+ 750 MHz minimum only</span><div class="track"><div class="fill" style="width:53.97%">16.19</div><div class="refline" style="left:70.13%"></div></div></div>
+    <div class="bar"><span><strong>All three combined</strong></span><div class="track"><div class="fill" style="width:48.23%">14.47</div><div class="refline" style="left:70.13%"></div></div></div>
+  </div>
+  <p class="axisnote">Milliseconds, scale 0–30 ms. The dashed line is the legacy baseline. Single-approach rows come from separate runs, so treat them as indicative.</p>
+  <div class="say"><b>Say it</b><p>"The default clock was the biggest problem, so a 750 MHz floor gave the biggest win. The compiler flag speeds up SHA-3 inside the PQ algorithms. The second core runs the two signature checks in parallel. Together they make hybrid 48% faster."</p></div>
+</section>
+
+<!-- 10 -->
+<section id="results">
+  <p class="eyebrow">Your result</p>
+  <h2>Final results (all approaches combined)</h2>
+  <p>BASE (default setup) and COMBINED (all three fixes) were alternated block by block in one session: 8000 connections, 0 failures.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Scenario</th><th>Legacy baseline</th><th>Hybrid, BASE</th><th>Hybrid, COMBINED</th><th>vs legacy baseline</th></tr></thead>
+    <tbody>
+      <tr class="hi"><td>Own server, full hybrid (end-to-end)</td><td class="n">21.04 ms</td><td class="n">28.06 ms</td><td class="n">14.47 ms</td><td class="n">−6.57 ms (−31%), 20/20</td></tr>
+      <tr class="hi"><td>Hackathon server, hybrid key exchange (handshake)</td><td class="n">38.36 ms</td><td class="n">43.76 ms</td><td class="n">35.62 ms</td><td class="n">−2.73 ms (−7%), 17/20</td></tr>
+      <tr><td>Idle temperature</td><td class="n">45.9 °C</td><td class="n">45.9 °C</td><td class="n">47.2 °C</td><td class="n">+1.3 °C</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Three facts judges may push on</h3>
+  <ul>
+    <li><strong>Why hybrid gains more than legacy:</strong> the same fixes take hybrid down 48% but legacy only 27%. The fixes speed up client-side crypto, and hybrid does more of it.</li>
+    <li><strong>Like for like, hybrid is even 1 ms faster than legacy on your server</strong> (both at COMBINED, 20/20 blocks). That's because the server's RSA-3072 signing (several ms) is slower than ECDSA + ML-DSA-44 signing.</li>
+    <li><strong>On the hackathon server, like for like, hybrid is still +2.8 ms slower.</strong> The bigger ML-KEM messages cost a little on the internet, and hybrid authentication can't be used there. Your claim is about beating the <em>baseline</em>, which is what the task asks for.</li>
+  </ul>
+  <div class="say"><b>Say it</b><p>"Task: no increase over the legacy baseline. Result: hybrid is 31% faster with full hybrid TLS on my server, and 7% faster against the hackathon server, for about one degree more at idle."</p></div>
+</section>
+
+<!-- 11 -->
+<section id="costs">
+  <p class="eyebrow">Task-sheet metrics</p>
+  <h2>Memory, communication, energy, acceleration</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Metric</th><th>Legacy</th><th>Hybrid</th><th>What causes it</th></tr></thead>
+    <tbody>
+      <tr><td>Peak memory (client process)</td><td class="n">6.3–6.6 MB</td><td class="n">+0.1–0.2 MB</td><td>Bigger keys and buffers; negligible</td></tr>
+      <tr><td>Bytes received</td><td class="n">2,520 B</td><td class="n">5,105 B</td><td>ML-DSA-44 signature 2,420 B + ML-KEM ciphertext 1,088 B</td></tr>
+      <tr><td>Bytes sent</td><td class="n">330 B</td><td class="n">1,552 B</td><td>ML-KEM-768 public key 1,184 B in the ClientHello</td></tr>
+      <tr><td>Resumed connection</td><td class="n">4.60 ms</td><td class="n">5.98 ms</td><td>No signatures; fresh hybrid key exchange (full speed, day 1)</td></tr>
+    </tbody>
+  </table></div>
+  <ul>
+    <li><strong>Communication:</strong> about +3.8 KB per handshake. That's small for Ethernet. It matters for very constrained links (LoRa, NB-IoT), where the 1.2 KB ClientHello may need several packets.</li>
+    <li><strong>Sending signatures as raw bytes</strong> instead of base64 saved about 800 B.</li>
+    <li><strong>Energy:</strong> not measured, because you had no USB-C power meter. Temperature is the proxy: +1.3 °C idle with COMBINED, the same during the runs, vs about +5–6 °C at full speed.</li>
+    <li><strong>Acceleration (Hailo-8L):</strong> not used and not detected on PCIe. The reasoning is in the practice questions.</li>
+  </ul>
+</section>
+
+<!-- 12 -->
+<section id="limits">
+  <p class="eyebrow">Be upfront</p>
+  <h2>Limits (say these before they ask)</h2>
+  <ul>
+    <li><strong>Hybrid authentication only against your own server.</strong> The hackathon server only signs with RSA-3072, so against it only the key exchange is hybrid.</li>
+    <li><strong>The ML-DSA signature uses a custom TLS extension,</strong> not a standard. In production you'd use standard-track options: composite ML-DSA certificates (IETF LAMPS draft), pure ML-DSA certificates, or "Catalyst" certificates with an alternative key.</li>
+    <li><strong>Pinned keys, not a PKI.</strong> That's fine for a closed device fleet, but a real rollout needs CA-issued post-quantum certificates.</li>
+    <li><strong>The bitmanip build only runs on CPUs with Zba/Zbb.</strong></li>
+    <li><strong>The key exchange halves still run one after another</strong> inside OpenSSL. Parallelising them would need an OpenSSL patch (another 0.5–1 ms).</li>
+    <li><strong>Energy wasn't measured.</strong></li>
+    <li><strong>The 750 MHz minimum isn't permanent yet.</strong> It needs a boot service, like the one used for full speed earlier.</li>
+    <li><strong>Server is a Mac,</strong> not a second embedded device.</li>
+  </ul>
+  <div class="say"><b>Say it</b><p>"The key exchange is fully standard. My authentication method is a working prototype; for production, I'd move it to composite ML-DSA certificates once the standard is final."</p></div>
+</section>
+
+<!-- 13 -->
+<section id="quiz">
+  <p class="eyebrow">Self-test</p>
+  <h2>Practice questions</h2>
+  <p>Answer out loud first, then open the card. Tick the ones you know; your ticks are saved in this browser.</p>
+  <div class="qtools">
+    <button type="button" id="btn-open">Show all answers</button>
+    <button type="button" id="btn-close">Hide all answers</button>
+    <button type="button" id="btn-unknown">Show only the ones I don't know</button>
+    <button type="button" id="btn-reset">Clear ticks</button>
+    <span class="score" id="score" aria-live="polite"></span>
+  </div>
+  <div id="qlist"></div>
+</section>
+
+<!-- 14 -->
+<section id="glossary">
+  <p class="eyebrow">Reference</p>
+  <h2>Glossary</h2>
+  <dl class="gloss">
+    <dt>PQC</dt><dd>Post-quantum cryptography: algorithms believed safe against quantum computers.</dd>
+    <dt>ML-KEM</dt><dd>Module-Lattice Key Encapsulation Mechanism, FIPS 203 (was Kyber). Agrees on a shared secret.</dd>
+    <dt>ML-DSA</dt><dd>Module-Lattice Digital Signature Algorithm, FIPS 204 (was Dilithium). Proves identity.</dd>
+    <dt>SLH-DSA</dt><dd>FIPS 205, hash-based signatures (was SPHINCS+). Very large signatures; not used here.</dd>
+    <dt>X25519</dt><dd>Elliptic-curve Diffie–Hellman on Curve25519. Classical key exchange.</dd>
+    <dt>X25519MLKEM768</dt><dd>The hybrid TLS group: both key shares are sent, and both secrets are combined.</dd>
+    <dt>ECDSA P-256</dt><dd>Elliptic-curve signatures on the NIST P-256 curve. Classical.</dd>
+    <dt>RSA-3072</dt><dd>Classical signatures; slow to sign, fast to verify.</dd>
+    <dt>Shor / Grover</dt><dd>Quantum algorithms: Shor breaks RSA and elliptic curves; Grover only weakens symmetric keys.</dd>
+    <dt>NTT</dt><dd>Number-theoretic transform, a fast way to multiply polynomials; the core of ML-KEM and ML-DSA.</dd>
+    <dt>Keccak / SHAKE</dt><dd>The SHA-3 family; ML-KEM and ML-DSA use it heavily.</dd>
+    <dt>Zba / Zbb</dt><dd>RISC-V bit-manipulation extensions: address arithmetic, and rotates / AND-NOT / bit counting.</dd>
+    <dt>ondemand</dt><dd>Linux CPU clock policy that raises the clock after it sees load.</dd>
+    <dt>scaling_min_freq</dt><dd>The lowest clock the policy is allowed to use.</dd>
+    <dt>Exporter</dt><dd>A TLS function that gives a secret value unique to one connection (used by hybrid auth v1).</dd>
+    <dt>Pinning</dt><dd>The client trusts one specific certificate or key instead of a certificate authority.</dd>
+    <dt>Median / p95</dt><dd>The middle value / the value 95% of runs are below.</dd>
+    <dt>RTT</dt><dd>Round-trip time on the network.</dd>
+  </dl>
+</section>
+</main>
+</div>
+
+<script>
+const QUESTIONS = [
+  ["Basics", "Why do we need post-quantum cryptography?", "Shor's algorithm on a large quantum computer breaks RSA and elliptic-curve crypto, which is every public-key algorithm in today's TLS. Recorded traffic can be decrypted later (harvest now, decrypt later), so key exchange must move now."],
+  ["Basics", "Is AES broken by quantum computers?", "No. Grover's algorithm only roughly halves the security level. AES-256 stays safe. Only the public-key parts need replacing."],
+  ["Basics", "What's the difference between ML-KEM and ML-DSA?", "ML-KEM (FIPS 203) agrees on a shared secret: it replaces the ECDH key exchange. ML-DSA (FIPS 204) is a signature: it replaces RSA/ECDSA for proving the server's identity. Both are lattice-based NIST standards from August 2024."],
+  ["Basics", "Why hybrid and not pure post-quantum?", "The PQ algorithms are new. If a classical attack is found, pure PQC is broken. Hybrid needs both parts broken: the session key is safe if either X25519 or ML-KEM holds, and the server can only be impersonated if both ECDSA and ML-DSA are forged. Regulators recommend hybrid for the transition."],
+  ["Basics", "Which is more urgent, key exchange or authentication?", "Key exchange. Recorded traffic can be decrypted later. A signature can only be forged during a live connection, so authentication must be fixed before quantum computers exist, but old recordings aren't at risk through it."],
+  ["Basics", "How is a KEM different from Diffie–Hellman?", "Client sends a public key; the server encapsulates a random secret with it and returns the ciphertext; the client decapsulates. Both end up with the same secret. It still fits in TLS 1.3's single round trip."],
+  ["Design", "Why ML-DSA-44 and not ML-DSA-65 or 87?", "ML-DSA-44 is NIST category 2, matching P-256's ~128-bit classical strength. The IETF composite draft pairs them the same way. It's smaller (2420 vs 3309 B) and verifies faster (1.0 vs 1.6 ms). The key exchange uses ML-KEM-768 (category 3) because that's the standard TLS hybrid group."],
+  ["Design", "Why ECDSA instead of keeping RSA alongside ML-DSA?", "The task asked to replace RSA. ECDSA is the faster, smaller classical partner: signing 0.64 ms vs 34 ms for RSA-3072, signature 71 vs 384 B. Pairing it with ML-DSA keeps the total server signing cost below RSA alone."],
+  ["Design", "How do you stop someone replaying a stolen ML-DSA signature?", "It signs a hash of this connection's ClientHello and ServerHello. Those contain fresh random values and the key shares from both sides, so the signature only matches this one handshake. (v1 signed the TLS exporter, which is also unique per connection.)"],
+  ["Design", "What if an attacker strips the ML-DSA extension?", "The client requires it. A missing signature is rejected (tested), and the client sends no application data until both signatures pass."],
+  ["Design", "Why not liboqs / oqs-provider or a different TLS library?", "OpenSSL 3.5 is a long-term-support release with ML-KEM and ML-DSA built in, using the final FIPS versions. That's fewer moving parts and closer to what a real product would ship. oqs-provider is mainly for research; it adds a plugin and more algorithms we didn't need."],
+  ["Design", "Why use a custom extension instead of a standard method?", "No standard composite ML-DSA certificate format was final, and OpenSSL 3.5 can't yet do dual signatures in one handshake. The custom extension let me prove the performance and the parallel check today. The production path is composite ML-DSA certificates (IETF LAMPS)."],
+  ["Design", "Why pin keys instead of using certificate authorities?", "For a closed device fleet, pinning is simple and strong: the device trusts only its own server. A public rollout would need post-quantum certificates from a CA. That's a deployment step, not a performance one."],
+  ["Performance", "Why was hybrid slower at the default setting?", "The CPU idles at 312.5 MHz and the ondemand policy only speeds up after it notices load; a 20 ms handshake is mostly over before that. Hybrid has more client-side crypto (ML-KEM, ECDSA + ML-DSA verify), so the slow clock hurt it more: +6.4 ms on the LAN."],
+  ["Performance", "Why is 750 MHz the best minimum clock?", "Of the tested settings, it was as fast as 1250 MHz and schedutil at 750, but the coolest of them (+0.5 °C idle). Full 1.5 GHz is fastest but about +6 °C hotter. 500 and 625 MHz weren't tested; that's a possible follow-up."],
+  ["Performance", "Why not simply run the CPU at full speed?", "I did on day 1: it gives 10.3 ms vs 10.7 ms legacy. But the chip ran hot (about 50–52 °C idle), which is bad for a device in an enclosure, and it wastes power when idle. The 750 MHz floor gets most of the benefit for about a fifth of the heat."],
+  ["Performance", "What exactly do Zba and Zbb do, and why do they help PQC?", "Zbb adds rotate (rol/ror), AND-NOT and bit-count instructions; Zba adds shifted adds for address arithmetic. Keccak/SHAKE, used heavily inside ML-KEM and ML-DSA, is mostly 64-bit rotates and AND-NOT, which took 3 instructions each before. So SHA-3 got 50% faster and ML-KEM 13–19% faster."],
+  ["Performance", "Why does bitmanip barely change the hackathon-server number?", "There, the ~30 ms network round trip dominates and the crypto is a small slice, so a 1–2 ms gain disappears in network noise. On the LAN it's clearly measurable: −1.6 ms, 20/20 blocks."],
+  ["Performance", "How does the multicore approach work, and is it safe?", "A persistent worker thread on a second core verifies ML-DSA while OpenSSL verifies ECDSA on the main core. Before any application data is sent, the main thread waits for the worker; if either check fails, the connection is dropped. Verification uses only public data, so running it on another thread leaks nothing."],
+  ["Performance", "Why only two cores and not all four?", "There are only two independent checks (classical and PQ). The rest of the handshake is a strict sequence of messages, so extra cores have nothing to do (Amdahl's law). The key-exchange halves could also run in parallel, but that needs an OpenSSL patch."],
+  ["Performance", "Why is a persistent thread better than starting a thread per handshake?", "Creating a thread costs time on this CPU. The feasibility test compared both, and the persistent worker was the best option, so the handshake code uses it."],
+  ["Performance", "Why does hybrid beat legacy like-for-like on your server?", "The server signs: RSA-3072 signing takes several milliseconds, while ECDSA + ML-DSA-44 signing is cheaper. Once client-side crypto is fast, that server-side difference wins: hybrid is 1 ms faster, 20/20 blocks."],
+  ["Performance", "Would a device that signs (mutual TLS) do better or worse with PQC?", "Better. On the board, ECDSA + ML-DSA-44 signing takes 0.64 + 4.69 ≈ 5.3 ms, vs 34 ms for RSA-3072."],
+  ["Method", "Why median and not average?", "Internet runs have huge outliers (up to 524 ms from one hiccup). The mean jumps around with a few of them; the median shows the typical connection. All stats (best, p95, mean, worst) are in the reports."],
+  ["Method", "How do you know the improvement isn't luck or network noise?", "1000 runs per mode, alternated in 20 blocks so both saw the same conditions, and compared per block. Hybrid won 20 of 20 blocks on the LAN: by chance that's about 1 in a million. 17/20 on the internet is p ≈ 0.003."],
+  ["Method", "Why does your final 14.5 ms differ from the 10.3 ms on day 1?", "Day 1 ran at a fixed 1.5 GHz. The final result uses the 750 MHz floor with ondemand, which is cooler. Each comparison was measured against a legacy baseline under the matching conditions."],
+  ["Method", "What happened with the first 165 ms legacy measurement?", "It was a measurement error: a local relay added its own connection time to the legacy runs. I found it, removed it, and that's why I moved to large alternating and paired runs."],
+  ["Task sheet", "What's the communication overhead?", "About +3.8 KB per handshake: received 5,105 vs 2,520 B (ML-DSA signature + ML-KEM ciphertext), sent 1,552 vs 330 B (ML-KEM public key). Raw signatures instead of base64 saved about 800 B."],
+  ["Task sheet", "What's the memory overhead?", "Peak process memory is 6.3–6.6 MB in all modes; hybrid adds only about 0.1–0.2 MB."],
+  ["Task sheet", "Did you measure energy?", "No: I had no USB-C power meter. Temperature is my proxy: +1.3 °C idle with the combined setup, no difference while running, vs about +5–6 °C at full speed. Measuring energy per handshake is the first follow-up."],
+  ["Task sheet", "Why didn't you use the Hailo-8L accelerator?", "It wasn't detected on PCIe. Even if it were, it's an 8-bit neural-network chip: ML-KEM works mod 3329 (12-bit) and ML-DSA mod 8380417 (23-bit), so the maths would need splitting and extra steps. All the PQ crypto is only a few ms per handshake, and the PCIe round trip would eat a large part of any gain. The CPU-side fixes delivered more."],
+  ["Task sheet", "What would you put in a migration guide?", "1) Upgrade to OpenSSL 3.5 in a separate prefix. 2) Check the server supports hybrid groups and PQ signatures. 3) Set a 750 MHz CPU floor. 4) Build with enable-ec_nistp_64_gcc_128 and -march=rv64gc_zba_zbb. 5) Use ML-DSA-44 with P-256. 6) Verify the two signatures in parallel. 7) Use session resumption for frequent reconnects."],
+  ["Limits", "What would you do with more time?", "Parallelise the key-exchange halves inside OpenSSL; test 500/625 MHz floors; measure energy with a power meter; move authentication to standard composite certificates; make the 750 MHz floor a boot service; test on a real embedded server and constrained networks."],
+  ["Limits", "Is your solution portable to other RISC-V boards?", "The clock floor and the second core work on any multicore Linux board. The bitmanip build needs Zba/Zbb; other chips just use the plain build and lose about 1.6 ms."]
+];
+
+const KEY = "pqc-prep-known-v1";
+function loadKnown() { try { return new Set(JSON.parse(localStorage.getItem(KEY) || "[]")); } catch (e) { return new Set(); } }
+function saveKnown(s) { try { localStorage.setItem(KEY, JSON.stringify([...s])); } catch (e) {} }
+const known = loadKnown();
+const list = document.getElementById("qlist");
+let lastCat = "";
+QUESTIONS.forEach(([cat, q, a], i) => {
+  if (cat !== lastCat) {
+    const h = document.createElement("p"); h.className = "qcat"; h.textContent = cat; list.appendChild(h); lastCat = cat;
+  }
+  const d = document.createElement("details"); d.className = "q"; d.dataset.i = i;
+  const s = document.createElement("summary"); s.textContent = q;
+  const body = document.createElement("div"); body.className = "a";
+  const p = document.createElement("p"); p.textContent = a;
+  const lab = document.createElement("label");
+  const cb = document.createElement("input"); cb.type = "checkbox"; cb.id = "known-" + i; cb.checked = known.has(i);
+  lab.appendChild(cb); lab.appendChild(document.createTextNode("I know this one"));
+  cb.addEventListener("change", () => { cb.checked ? known.add(i) : known.delete(i); saveKnown(known); refresh(); });
+  body.appendChild(p); body.appendChild(lab); d.appendChild(s); d.appendChild(body); list.appendChild(d);
+});
+let onlyUnknown = false;
+function refresh() {
+  document.querySelectorAll(".q").forEach(d => {
+    const k = known.has(+d.dataset.i);
+    d.classList.toggle("known", k);
+    d.hidden = onlyUnknown && k;
+  });
+  document.getElementById("score").textContent = known.size + " / " + QUESTIONS.length + " known";
+}
+document.getElementById("btn-open").onclick = () => document.querySelectorAll(".q").forEach(d => d.open = true);
+document.getElementById("btn-close").onclick = () => document.querySelectorAll(".q").forEach(d => d.open = false);
+const bu = document.getElementById("btn-unknown");
+bu.onclick = () => { onlyUnknown = !onlyUnknown; bu.textContent = onlyUnknown ? "Show all questions" : "Show only the ones I don't know"; refresh(); };
+document.getElementById("btn-reset").onclick = () => { known.clear(); saveKnown(known); document.querySelectorAll(".q input").forEach(c => c.checked = false); refresh(); };
+refresh();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true, theme: (document.documentElement.dataset.theme !== "light" && matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "default"});</script>
+</body></html>
