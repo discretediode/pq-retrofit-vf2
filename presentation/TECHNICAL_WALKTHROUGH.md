@@ -1,7 +1,7 @@
 # Technical walkthrough: everything we did, step by step
 
 Hybrid post-quantum TLS on the StarFive VisionFive 2 (JH7110, 4 × SiFive U74 RV64GC, 1.5 GHz, Debian).
-Detailed reports and raw data for every step: `achieved_results/`. Practice questions: `achieved_results/study_guide/`.
+Detailed reports and raw data for every step: `achieved_results/`. Practice questions: `presentation/study_guide/`.
 
 ## The goal
 The task asked for three things:

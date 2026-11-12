@@ -1,6 +1,6 @@
 # DYNAMIC CPU FREQ, part 1: screening of four middle-ground CPU settings
 
-Date: 2026-11-11, 09:57–10:53 UTC. Compared with the BASELINE (`baseline_REPORT_default_clock.md`:
+Date: 2026-11-11, 09:57–10:53 UTC. Compared with the BASELINE (`baseline_REPORT.md`:
 ondemand, min 312.5 MHz, 1000 runs per mode).
 Idea tested: keep a power-saving governor, but stop the CPU from starting a TLS handshake at the lowest
 clock, by raising `scaling_min_freq` and/or using `schedutil`.

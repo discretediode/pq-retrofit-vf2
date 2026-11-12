@@ -154,7 +154,7 @@ Raw data on the board: `~/pqc/final_results.csv`, `ab_results.csv`, `ab_results_
 ## 10. BASELINE (2026-11-11): default CPU clock, 1000 runs per mode
 
 The CPU governor was switched back to `ondemand` (default) because the chip was warming up. Rerun with 1000
-measurements per mode, alternating blocks (full report: `baseline_default_clock/baseline_REPORT_default_clock.md`):
+measurements per mode, alternating blocks (full report: `baseline_default_clock/baseline_REPORT.md`):
 
 | Scenario | Legacy median (best / worst) | Hybrid median (best / worst) | Difference |
 |---|---|---|---|
@@ -223,7 +223,7 @@ Caveat: the library then requires a CPU with Zba/Zbb.
 The classical and post-quantum halves of each hybrid step (ECDSA ‖ ML-DSA verify, X25519 ‖ ML-KEM keygen,
 X25519 ‖ ML-KEM decaps) were run one after another vs on two cores at once (persistent worker thread), 200
 iterations per case, at three clock settings and with both builds; 10,800 measurements, 0 failures.
-Full report: `multicore/multicore_REPORT.md`.
+Full report: `multicore/multicore_feasibility_REPORT.md`.
 
 | Client-side crypto of one hybrid handshake | One core | Two cores | Saved |
 |---|---|---|---|

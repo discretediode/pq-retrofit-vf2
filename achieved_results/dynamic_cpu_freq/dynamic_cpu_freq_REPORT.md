@@ -1,7 +1,7 @@
 # DYNAMIC CPU FREQ: final report (raise only the minimum CPU clock)
 
 Date: 2026-11-11. Board: VisionFive 2 (JH7110, 4x U74 @ up to 1.5 GHz).
-Compared with the **BASELINE** (`baseline_REPORT_default_clock.md`): default CPU setting (ondemand, min 312.5 MHz),
+Compared with the **BASELINE** (`baseline_REPORT.md`): default CPU setting (ondemand, min 312.5 MHz),
 legacy vs hybrid, 1000 runs per mode.
 
 ## The idea

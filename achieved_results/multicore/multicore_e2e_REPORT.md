@@ -2,7 +2,7 @@
 
 Date: 2026-11-11. Board: VisionFive 2 (JH7110, 4x SiFive U74), OpenSSL 3.5.9 (plain "opt" build, the same one the
 baseline used for hybrid). CPU at the **default setting** (`ondemand`, min 312.5 MHz), the same as the **BASELINE**.
-Follows the feasibility test in `multicore_REPORT.md` (part 1).
+Follows the feasibility test in `multicore_feasibility_REPORT.md` (part 1).
 
 ## What was built
 

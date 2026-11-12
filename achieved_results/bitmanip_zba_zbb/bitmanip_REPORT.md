@@ -2,7 +2,7 @@
 
 Date: 2026-11-11. Board: VisionFive 2 (JH7110, 4x SiFive U74, ISA `rv64imafdc_..._zba_zbb`), OpenSSL 3.5.9.
 Compared with the builds used for all earlier results ("plain", compiled for `rv64gc` without the extensions)
-and with the **BASELINE** (`baseline_REPORT_default_clock.md`).
+and with the **BASELINE** (`baseline_REPORT.md`).
 
 ## The idea
 The U74 cores implement **Zba** (address generation: `sh1add`/`sh2add`/`sh3add`) and **Zbb** (basic bit-manipulation:

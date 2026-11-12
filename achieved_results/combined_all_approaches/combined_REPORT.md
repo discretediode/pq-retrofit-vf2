@@ -79,7 +79,7 @@ For reference: full CPU speed (`performance`, fixed 1.5 GHz) idled at ~50–52 �
 
 | Configuration | Hybrid median | Source |
 |---|---|---|
-| Baseline (default clock, plain build, v1, one core) | 27.95 ms (28.06 ms in this run) | `baseline_REPORT_default_clock.md`, this run |
+| Baseline (default clock, plain build, v1, one core) | 27.95 ms (28.06 ms in this run) | `baseline_REPORT.md`, this run |
 | Approach 2 only: bitmanip build | 26.57 ms | `bitmanip_REPORT.md` |
 | Approach 3 only: ML-DSA on a second core (v2) | 24.57 ms | `multicore_e2e_REPORT.md` |
 | Approach 1 only: min 750 MHz | 16.19 ms | `dynamic_cpu_freq_REPORT.md` |
@@ -112,6 +112,6 @@ raising the minimum clock removes most of the slowdown, and the other two then s
 - The v2 ML-DSA signature uses a private-use TLS extension (`0xFE20`), not a standard; see `multicore_e2e_REPORT.md`.
 - The bitmanip build runs only on CPUs with Zba/Zbb.
 - The key exchange halves (X25519 ‖ ML-KEM) are still computed one after another inside OpenSSL (possible further
-  gain of ~0.5–1 ms at 750 MHz, see `multicore_REPORT.md`).
+  gain of ~0.5–1 ms at 750 MHz, see `multicore_feasibility_REPORT.md`).
 - Energy wasn't measured; temperature is the proxy.
 - The 750 MHz minimum isn't made permanent on the board; it was active only during the measurements.

@@ -21,5 +21,5 @@ Preparation material for the team, to explain the project and answer the judges'
 12. 35 practice questions with answers
 13. Glossary
 
-Every number comes from the reports in this folder; see [`../SUMMARY.md`](../SUMMARY.md) and
-[`../combined_all_approaches/combined_REPORT.md`](../combined_all_approaches/combined_REPORT.md).
+Every number comes from the reports in `achieved_results/`; see [`achieved_results/SUMMARY.md`](../../achieved_results/SUMMARY.md) and
+[`achieved_results/combined_all_approaches/combined_REPORT.md`](../../achieved_results/combined_all_approaches/combined_REPORT.md).

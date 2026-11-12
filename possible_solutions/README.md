@@ -1,5 +1,10 @@
 # Possible solutions: closing the remaining latency gap
 
+> **Status (2026-11-12): the latency gap is closed.** With the minimum CPU clock at 750 MHz, the Zba/Zbb build and
+> ML-DSA verified on a second core, full hybrid TLS takes 14.5 ms vs 21.0 ms for the legacy baseline (−31 %).
+> See [`../results/FINAL_COMPARISON_REPORT.md`](../results/FINAL_COMPARISON_REPORT.md). The section below is the
+> planning record from before that result.
+
 This document lists the optimisations we have **tried**, are **trying**, and **could try next**.
 They aim to make hybrid post-quantum TLS on the StarFive VisionFive 2 no slower than the legacy (RSA) handshake.
 

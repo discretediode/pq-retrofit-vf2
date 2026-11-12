@@ -84,4 +84,4 @@ That's what our migration guide and our company are about."
   RSA-3072 only and it refuses ECDSA and ML-DSA signatures, so hybrid authentication was measured against our own
   server, with the same setup for legacy and hybrid. The ML-DSA signature uses a custom TLS extension; the production
   path is standard ML-DSA or composite certificates. Energy wasn't measured; temperature is the proxy.
-- More detail and practice questions: `achieved_results/study_guide/`.
+- More detail and practice questions: `presentation/study_guide/`.

@@ -2,7 +2,7 @@
 
 Paste this file into Claude (or open this repo in Claude Code) to get up to speed.
 
-- **Setup:** `README.md` steps 1–4. **Skip steps 5–9 (Hailo): we have no Hailo.**
+- **Setup:** `BOARD_SETUP_GUIDE_HAILO.md` steps 1–4. **Skip steps 5–9 (Hailo): we have no Hailo.**
 - **Testing:** sections 4 and 5 below.
 - **Recording results:** section 6 below.
 
@@ -66,13 +66,13 @@ Rule: every optimisation must keep the output **byte-identical** to the referenc
 - `MBEDTLS_ECP_FIXED_POINT_OPTIM`
 - a bigger `MBEDTLS_ECP_WINDOW_SIZE`
 
-**P6: TLS integration.** The functions to change are `ssl_tls13_write_certificate_verify_body` and `ssl_tls13_parse_certificate_verify` in `library/ssl_tls13_generic.c` (README step 10).
+**P6: TLS integration.** The functions to change are `ssl_tls13_write_certificate_verify_body` and `ssl_tls13_parse_certificate_verify` in `library/ssl_tls13_generic.c` (BOARD_SETUP_GUIDE_HAILO.md step 10).
 
 ---
 
 ## 4. Testing ground rules (read before measuring anything)
 
-1. **Lock the CPU speed** at the start of every session (README step 3). Without this, numbers can swing by 2×.
+1. **Lock the CPU speed** at the start of every session (BOARD_SETUP_GUIDE_HAILO.md step 3). Without this, numbers can swing by 2×.
    ```bash
    echo performance | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
    ```

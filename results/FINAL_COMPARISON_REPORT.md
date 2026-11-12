@@ -23,7 +23,7 @@ Detailed reports, raw data and scripts: `achieved_results/`.
 | CPU bump, 750 MHz minimum | 26.1 | **37.2** | 303.6 | 29.3 | **40.3** | 200.4 |
 | Bit manipulation (Zba/Zbb) | 31.0 | **41.3** | 274.6 | 34.0 | **47.5** | 547.6 |
 | Multicore | not possible: FOCAL's server supports the hybrid key exchange, but only RSA authentication | | | | | |
-| **All three combined** | 25.9 | **33.0** | 355.0 | **27.7** | **35.6** | **140.8** |
+| **Combined** (clock + bitmanip; multicore n/a) | 25.9 | **33.0** | 355.0 | **27.7** | **35.6** | **140.8** |
 
 On FOCAL's server, bit manipulation shows no clear change: the internet delay (about 30 ms) hides a 1–2 ms gain.
 
@@ -34,7 +34,10 @@ On FOCAL's server, bit manipulation shows no clear change: the internet delay (a
 | Own server, legacy baseline | 12.6 | **21.0** | 35.1 |
 | Own server, **hybrid combined** | **12.2** | **14.5** | **26.6** |
 | FOCAL, legacy baseline | 28.2 | **38.4** | 354.3 |
-| FOCAL, **hybrid combined** | **27.7** | **35.6** | **140.8** |
+| FOCAL, **hybrid combined** (clock + bitmanip) | **27.7** | **35.6** | **140.8** |
+
+"Combined" = all three approaches on our own server. On FOCAL's server only the CPU clock and bit manipulation
+apply, because it uses RSA authentication, so there's no ML-DSA signature to verify on a second core.
 
 **Hybrid combined beats the legacy baseline on best, median and worst:** −31 % median on our own server
 (faster in 20/20 test blocks) and −7 % median on FOCAL's server (17/20 blocks). 8,000 connections, 0 failures,

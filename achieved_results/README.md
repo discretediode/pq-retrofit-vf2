@@ -7,10 +7,13 @@ on a StarFive VisionFive 2 (JH7110, 4x SiFive U74 @ up to 1.5 GHz), OpenSSL 3.5.
 - **Hybrid:** X25519MLKEM768 key exchange (+ ECDSA P-256 and ML-DSA-44 dual-signature authentication on our own server)
 
 Two scenarios are measured throughout:
-1. **Hackathon server** (IPv4), TLS handshake time, with server authentication RSA-3072 in both modes
+1. **FOCAL's hackathon server** (IPv4), TLS handshake time. It supports the hybrid key exchange but authenticates
+   with RSA-3072 only, so hybrid authentication can't be used there
 2. **Own server** on the local network, end-to-end time including full hybrid authentication
 
-Start with **[SUMMARY.md](SUMMARY.md)** ([PDF](SUMMARY.pdf)); sections 10–14 cover the results in this folder.
+All numbers on one page (best / median / worst for every approach):
+**[`../results/FINAL_COMPARISON_REPORT.md`](../results/FINAL_COMPARISON_REPORT.md)**.
+Full story: **[SUMMARY.md](SUMMARY.md)** ([PDF](SUMMARY.pdf)); sections 10–14 cover the results in this folder.
 
 ## Folder layout: one folder per approach
 Each approach is self-contained: a detailed report (`.md` + `.pdf`), all raw measurements, statistics, logs and the
@@ -25,7 +28,6 @@ achieved_results/
 ├── bitmanip_zba_zbb/               APPROACH 2: RISC-V Zba/Zbb bit-manipulation extensions
 ├── multicore/                      APPROACH 3: classical and PQ halves on separate CPU cores
 ├── combined_all_approaches/        ALL THREE APPROACHES COMBINED vs the baseline (final result)
-├── study_guide/                    team study guide: background, design, results, limits, practice Q&A
 └── tools/                          source code of clients, server, benchmarks and analysis scripts
 ```
 
@@ -38,12 +40,14 @@ achieved_results/
 | Idle temperature | 45.9 °C | 45.9 °C | 47.2 °C | +1.3 °C |
 
 COMBINED = minimum CPU clock 750 MHz + Zba/Zbb OpenSSL build + ML-DSA verified on a second core inside the TLS
-handshake; alternated block by block with the baseline setup, 1000 runs each, 0 failures. **The "no increase in
+handshake; alternated block by block with the baseline setup, 1000 runs each, 0 failures. Against FOCAL's server
+only the first two apply (it uses RSA authentication, so there's no ML-DSA signature to verify). **The "no increase in
 end-to-end latency" target is met with margin, with software and settings only.**
 See [`combined_all_approaches/combined_REPORT.md`](combined_all_approaches/combined_REPORT.md).
 
 ## Results per approach
 
+### Minimum CPU clock (dynamic CPU frequency)
 | Scenario | Baseline: legacy, default CPU | Hybrid, default CPU | **Hybrid, min clock 750 MHz** |
 |---|---|---|---|
 | Hackathon server, handshake (median) | 42.17 ms | 48.30 ms | **40.26 ms** |
@@ -79,7 +83,7 @@ Sections 1–9 refer to earlier raw data that isn't included in this folder.
 ### `baseline_default_clock/`: BASELINE (default CPU setting: `ondemand`, min 312.5 MHz)
 | File | Contents |
 |---|---|
-| `baseline_REPORT_default_clock.md` / `.pdf` | Report: legacy vs hybrid, 1000 runs per mode, both scenarios, best / median / percentiles / worst |
+| `baseline_REPORT.md` / `.pdf` | Report: legacy vs hybrid, 1000 runs per mode, both scenarios, best / median / percentiles / worst |
 | `baseline_raw_1000.csv` | All 4000 measurements: `scenario,mode,block,run,ms` |
 | `baseline_stats_1000.txt` | Computed statistics |
 | `baseline_bench_1000.log` | Per-block log: governor, temperature, negotiated group / ML-DSA verification checks |
@@ -114,7 +118,7 @@ Sections 1–9 refer to earlier raw data that isn't included in this folder.
 ### `multicore/`: MULTICORE (classical and PQ halves on separate CPU cores)
 | File | Contents |
 |---|---|
-| `multicore_REPORT.md` / `.pdf` | **Report**: one core vs two cores (new thread / persistent worker), 3 pairs, 3 clock settings x 2 builds, findings and limits |
+| `multicore_feasibility_REPORT.md` / `.pdf` | **Report**: one core vs two cores (new thread / persistent worker), 3 pairs, 3 clock settings x 2 builds, findings and limits |
 | `multicore_feasibility_raw.csv` | All 10,800 measurements: `label,pair,mode,iter,us,cpu_classical,cpu_pq` (label = build_clock) |
 | `multicore_feasibility_stats.txt` | Statistics: best / median / p95 / worst, time saved, speed-up, share of iterations where parallel won, core usage |
 | `multicore_feasibility.log` | Run log (clock setting, build, temperature, failures) |
@@ -134,13 +138,6 @@ Sections 1–9 refer to earlier raw data that isn't included in this folder.
 | `combined_stats.txt` | Statistics: best / median / mean / p95 / worst, paired per-block comparisons, target check |
 | `combined.log` | Run log: per-block verification checks, failures (0), temperatures |
 | `scripts/bench_combined.sh` | Benchmark script (needs sudo; restores the default CPU setting) |
-
-### `study_guide/`: team study guide (presentation prep)
-| File | Contents |
-|---|---|
-| `study_guide.pdf` | **Read this on GitHub**: the whole guide with all practice answers shown (21 pages) |
-| `study_guide.html` | Interactive version: download it and open it in a browser; tick the questions you know (saved in your browser) |
-| `README.md` | What the guide covers and how to use it |
 
 ### `tools/`: source code
 | File | What |
