@@ -34,7 +34,8 @@ to **hybrid post-quantum cryptography**, then made it **faster than the original
 | [`presentation/`](presentation/) | Slide notes, full technical walkthrough, and the study guide with practice questions |
 | [`achieved_results/`](achieved_results/) | Evidence: one folder per approach, each with a report (`.md` + `.pdf`), raw data, statistics, logs and scripts; source code in `tools/`; migration guide in `SUMMARY.md` section 7 |
 | [`possible_solutions/`](possible_solutions/) | Ideas we evaluated, including what could come next |
-| [`docs/`](docs/), [`src/`](src/), [`hailo/`](hailo/), [`patches/`](patches/), `Makefile` | Hailo-8L acceleration prototype (Mbed TLS / ML-DSA offload) and its setup guide. Not used for the results: no Hailo module was detected on our board |
+| [`docs/`](docs/) | Board setup guide (Hailo prototype), team handoff notes, archived results snapshot |
+| [`src/`](src/), [`hailo/`](hailo/), [`patches/`](patches/), `Makefile` | Hailo-8L acceleration prototype (Mbed TLS / ML-DSA offload). Not used for the results: no Hailo module was detected on our board |
 
 ## Limits
 - Hybrid authentication was measured against our own test server: FOCAL's server supports the hybrid key exchange
