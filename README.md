@@ -26,16 +26,30 @@ to **hybrid post-quantum cryptography**, then made it **faster than the original
 3. **Second core:** the ML-DSA signature travels in the TLS Certificate message and is verified on a second core while
    ECDSA is verified on the first (28.2 → 24.6 ms).
 
-## Where to look
+## Repository layout
 
-| Folder | What's in it |
-|---|---|
-| [`results/`](results/) | **All numbers on one page:** best / median / worst, legacy vs hybrid, for every approach |
-| [`presentation/`](presentation/) | Slide notes, full technical walkthrough, and the study guide with practice questions |
-| [`achieved_results/`](achieved_results/) | Evidence: one folder per approach, each with a report (`.md` + `.pdf`), raw data, statistics, logs and scripts; source code in `tools/`; migration guide in `SUMMARY.md` section 7 |
-| [`possible_solutions/`](possible_solutions/) | Ideas we evaluated, including what could come next |
-| [`docs/`](docs/) | Board setup guide (Hailo prototype), team handoff notes, archived results snapshot |
-| [`src/`](src/), [`hailo/`](hailo/), [`patches/`](patches/), `Makefile` | Hailo-8L acceleration prototype (Mbed TLS / ML-DSA offload). Not used for the results: no Hailo module was detected on our board |
+```
+README.md                         start here
+results/                          all measurements
+├── FINAL_COMPARISON_REPORT       all numbers on one page: best / median / worst, legacy vs hybrid
+├── README                        index of every result file
+├── 01_baseline_default_clock/    baseline: default CPU setting
+├── 02_dynamic_cpu_freq/          approach 1: minimum CPU clock 750 MHz
+├── 03_bitmanip_zba_zbb/          approach 2: RISC-V bit-manipulation build
+├── 04_multicore/                 approach 3: ML-DSA verified on a second core
+└── 05_combined_all_approaches/   final result: all approaches together
+presentation/                     slide notes, technical walkthrough, study guide with practice questions
+docs/
+├── PROJECT_SUMMARY               full project story, bottleneck analysis, migration guide (section 7)
+├── POSSIBLE_SOLUTIONS            ideas we evaluated and next steps
+└── archive/                      earlier results snapshot
+src/                              our C code (OpenSSL 3.5): TLS client and server, benchmarks
+tools/                            analysis scripts and Markdown-to-PDF converter
+hailo_prototype/                  teammate's Mbed TLS + Hailo-8L acceleration prototype, with its own guide
+```
+
+Each folder in `results/` holds a report (`.md` + `.pdf`), all raw measurements, statistics, logs and the
+scripts used. The Hailo prototype wasn't used for the results: no Hailo module was detected on our board.
 
 ## Limits
 - Hybrid authentication was measured against our own test server: FOCAL's server supports the hybrid key exchange

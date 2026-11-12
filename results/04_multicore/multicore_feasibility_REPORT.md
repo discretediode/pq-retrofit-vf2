@@ -17,7 +17,7 @@ The client-side work of one hybrid handshake consists of three such pairs:
 | `kex_decaps` | X25519 shared secret | ML-KEM-768 decapsulation | after the ServerHello |
 
 ## Method
-Test program `parverify` (`tools/parverify.c`), linked against the OpenSSL builds on the board. Each pair is run in
+Test program `parverify` (`src/parverify.c`), linked against the OpenSSL builds on the board. Each pair is run in
 three ways:
 
 | Mode | How |

@@ -1,7 +1,8 @@
 # Board setup guide: Hailo-8L acceleration prototype
 
-> This was the repository's original README. It describes the Mbed TLS + Hailo-8L prototype in `src/`, `hailo/`
-> and `patches/`. The measured results use OpenSSL 3.5.9 without Hailo; see the [main README](../README.md).
+> Self-contained Mbed TLS + Hailo-8L prototype (`src/`, `hailo/`, `patches/`, `Makefile`; its benchmark output goes
+> to `results/` inside this folder). Run all commands below from `hailo_prototype/`. This was the repository's original
+> README. The measured project results use OpenSSL 3.5.9 without Hailo: see the [main README](../README.md).
 
 Hybrid ML-DSA + ECDSA authentication on the StarFive VisionFive 2, with the
 small ML-DSA multiplications offloaded to a Hailo-8L. FOCAL "Post-Quantum
@@ -80,7 +81,7 @@ git clone https://github.com/<your-github-user>/pq-retrofit-vf2.git
 # ML-DSA reference code, pinned to the version the patch was made for
 git clone https://github.com/pq-crystals/dilithium.git
 cd dilithium && git checkout d35ba3f
-git apply ../pq-retrofit-vf2/patches/dilithium-accel.patch
+git apply ../pq-retrofit-vf2/hailo_prototype/patches/dilithium-accel.patch
 cd ..
 
 # Mbed TLS 3.6.2 (only the crypto library is needed for the benchmarks)
@@ -102,7 +103,7 @@ make -C mbedtls-3.6.2/library -j4 libmbedcrypto.a
 
 🟢 **BOARD**
 ```bash
-cd ~/hack/pq-retrofit-vf2
+cd ~/hack/pq-retrofit-vf2/hailo_prototype
 make check
 ```
 
@@ -190,7 +191,7 @@ migration guide), and help with step 10 / the slides.
 
 🟢 **BOARD**
 ```bash
-cd ~/hack/pq-retrofit-vf2
+cd ~/hack/pq-retrofit-vf2/hailo_prototype
 ./bin/keytool sign-weights   keys/mldsa_sk.bin keys/sign_weights.bin
 ./bin/keytool verify-weights keys/mldsa_pk.bin keys/verify_weights.bin
 ```
@@ -281,7 +282,7 @@ from the Mac to the board.)
 
 🟢 **BOARD** — rebuild with Hailo support:
 ```bash
-cd ~/hack/pq-retrofit-vf2
+cd ~/hack/pq-retrofit-vf2/hailo_prototype
 make clean && make HAILO=1
 ```
 

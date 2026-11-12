@@ -1,6 +1,6 @@
-# Paths to the two libraries (cloned next to this repo by the guide).
-DILITHIUM ?= ../dilithium/ref
-MBEDTLS   ?= ../mbedtls-3.6.2
+# Paths to the two libraries (cloned next to the repo by the guide; this Makefile lives in hailo_prototype/).
+DILITHIUM ?= ../../dilithium/ref
+MBEDTLS   ?= ../../mbedtls-3.6.2
 
 CC     ?= cc
 CFLAGS += -O3 -Wall -Wextra -DDILITHIUM_MODE=2 -Isrc -I$(DILITHIUM) -I$(MBEDTLS)/include

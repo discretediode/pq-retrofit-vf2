@@ -1,13 +1,13 @@
 > **Archived snapshot (2026-11-11), superseded.** Kept so no work is lost. Current results:
-> [`../results/FINAL_COMPARISON_REPORT.md`](../results/FINAL_COMPARISON_REPORT.md) and the [main README](../README.md).
+> [`results/FINAL_COMPARISON_REPORT.md`](../../results/FINAL_COMPARISON_REPORT.md) and the [main README](../../README.md).
 
 # Results summary: hybrid post-quantum TLS on the StarFive VisionFive 2
 
 NextSemi / SEMICON FOCAL hackathon, "Post-Quantum Retrofit". Status as of 2026-11-11.
 
 - One-page overview of what we found.
-- Full data and reports: [`achieved_results/`](achieved_results/). Start with [`SUMMARY.md`](achieved_results/SUMMARY.md).
-- What we're trying next: [`possible_solutions/`](possible_solutions/).
+- Full data and reports: [`results/`](../../results/). Start with [`PROJECT_SUMMARY.md`](../PROJECT_SUMMARY.md).
+- What we're trying next: [`docs/POSSIBLE_SOLUTIONS.md`](../POSSIBLE_SOLUTIONS.md).
 
 ---
 
@@ -167,7 +167,7 @@ Server-side confirmation: `"handshake_method":"hybrid-pqc"`.
 
 ## 9. Next steps
 
-See [`possible_solutions/README.md`](possible_solutions/README.md). The top candidates for closing the last 0.5 ms:
+See [`docs/POSSIBLE_SOLUTIONS.md`](../POSSIBLE_SOLUTIONS.md). The top candidates for closing the last 0.5 ms:
 1. **Skip the redundant certificate-signature check** for the pinned certificate (~1.4 ms, estimate).
 2. **Pre-generate the ML-KEM key pair** before connecting (~1.4 ms, estimate).
 3. **Zbb bit-manipulation rebuild** of OpenSSL (0.2–0.6 ms, estimate; running now).
@@ -176,8 +176,8 @@ See [`possible_solutions/README.md`](possible_solutions/README.md). The top cand
 
 | What | Where |
 |---|---|
-| Full project summary, reproduction steps | [`achieved_results/SUMMARY.md`](achieved_results/SUMMARY.md) |
-| Default-clock baseline, 1000 runs | [`achieved_results/baseline_default_clock/`](achieved_results/baseline_default_clock/) |
-| CPU clock study + recommendation | [`achieved_results/dynamic_cpu_freq/`](achieved_results/dynamic_cpu_freq/) |
-| Planned optimisations | [`possible_solutions/`](possible_solutions/) |
-| Mbed TLS benchmark harness | [`src/`](src/), [`Makefile`](Makefile), [`HANDOFF.md`](HANDOFF.md) |
+| Full project summary, reproduction steps | [`docs/PROJECT_SUMMARY.md`](../PROJECT_SUMMARY.md) |
+| Default-clock baseline, 1000 runs | [`results/01_baseline_default_clock/`](../../results/01_baseline_default_clock/) |
+| CPU clock study + recommendation | [`results/02_dynamic_cpu_freq/`](../../results/02_dynamic_cpu_freq/) |
+| Planned optimisations | [`docs/POSSIBLE_SOLUTIONS.md`](../POSSIBLE_SOLUTIONS.md) |
+| Mbed TLS benchmark harness | [`hailo_prototype/src/`](../../hailo_prototype/src/), [`Makefile`](../../hailo_prototype/Makefile), [`HANDOFF.md`](../../hailo_prototype/HANDOFF.md) |

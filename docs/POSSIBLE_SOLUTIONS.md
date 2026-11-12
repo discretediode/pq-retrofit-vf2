@@ -8,7 +8,7 @@
 This document lists the optimisations we have **tried**, are **trying**, and **could try next**.
 They aim to make hybrid post-quantum TLS on the StarFive VisionFive 2 no slower than the legacy (RSA) handshake.
 
-- Measured results: [`../achieved_results/`](../achieved_results/). Start with [`SUMMARY.md`](../achieved_results/SUMMARY.md).
+- Measured results: [`../results/`](../results/). Start with [`PROJECT_SUMMARY.md`](../docs/PROJECT_SUMMARY.md).
 - Everything marked **estimate** below is not yet measured on the board.
 
 ---
@@ -142,7 +142,7 @@ echo 750000 | sudo tee /sys/devices/system/cpu/cpufreq/policy0/scaling_min_freq
 - All client crypto is about 5 ms in total, so even infinitely fast offload saves at most that.
 - Per-call transfer and setup overhead (PCIe for an NPU, OpenCL for the GPU) is likely in the same range.
 - The arithmetic doesn't fit neural-network accelerators: ML-KEM works mod 3329, ML-DSA mod 8380417, and both rely on Keccak.
-- The board's OpenCL driver support is unverified. Full reasoning: `achieved_results/SUMMARY.md`, section 6.
+- The board's OpenCL driver support is unverified. Full reasoning: `docs/PROJECT_SUMMARY.md`, section 6.
 
 ---
 
@@ -159,10 +159,10 @@ echo 750000 | sudo tee /sys/devices/system/cpu/cpufreq/policy0/scaling_min_freq
 
 ## 5. How each solution is measured
 
-Use the same method as `achieved_results/`, so the numbers are comparable:
+Use the same method as `results/`, so the numbers are comparable:
 
 1. **Same CPU setting for legacy and hybrid** (recommended: `ondemand` + min 750 MHz). A gain only counts if it holds at equal settings.
 2. **Alternating blocks** of 50 runs (legacy → hybrid, then hybrid → legacy), 1000 runs per mode, so both see the same network.
 3. Report **best / median / p95 / worst**, plus "hybrid faster in X of 20 blocks".
 4. **Correctness check per block:** X25519MLKEM768 negotiated, ML-DSA-44 signature verified, 0 failed connections.
-5. Results go in a new folder under `achieved_results/<solution_name>/` with a `REPORT.md`, raw CSV, stats and log.
+5. Results go in a new folder under `results/<solution_name>/` with a `REPORT.md`, raw CSV, stats and log.

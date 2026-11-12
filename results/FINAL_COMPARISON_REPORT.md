@@ -3,7 +3,7 @@
 StarFive VisionFive 2 (4 × SiFive U74 RISC-V, Debian, OpenSSL 3.5.9). All values are milliseconds per connection,
 **1000 connections per mode**; lower is better. Legacy = X25519 + RSA-3072 (the baseline connection).
 Hybrid = X25519 + ML-KEM-768 key exchange, plus ECDSA P-256 + ML-DSA-44 authentication on our own server.
-Detailed reports, raw data and scripts: `achieved_results/`.
+Detailed reports, raw data and scripts: `results/`.
 
 ## 1. Our own server (full hybrid: key exchange + authentication, local network)
 
@@ -72,6 +72,6 @@ apply, because it uses RSA authentication, so there's no ML-DSA signature to ver
   (21.1–21.7 ms). Section 3 is the cleanest comparison, because baseline and combined were alternated block by block
   in one session.
 - Multicore only changes hybrid: legacy has a single signature to check, so its row is just that session's reference.
-- Sources (all in `achieved_results/`): `baseline_default_clock/baseline_stats_1000.txt`,
-  `dynamic_cpu_freq/dynamic_cpu_freq_confirm_stats.txt` (D1), `bitmanip_zba_zbb/bitmanip_e2e_stats.txt`,
-  `multicore/multicore_e2e_stats.txt` (v2_par), `combined_all_approaches/combined_stats.txt`.
+- Sources (all in `results/`): `01_baseline_default_clock/baseline_stats_1000.txt`,
+  `02_dynamic_cpu_freq/dynamic_cpu_freq_confirm_stats.txt` (D1), `03_bitmanip_zba_zbb/bitmanip_e2e_stats.txt`,
+  `04_multicore/multicore_e2e_stats.txt` (v2_par), `05_combined_all_approaches/combined_stats.txt`.

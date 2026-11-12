@@ -154,7 +154,7 @@ Raw data on the board: `~/pqc/final_results.csv`, `ab_results.csv`, `ab_results_
 ## 10. BASELINE (2026-11-11): default CPU clock, 1000 runs per mode
 
 The CPU governor was switched back to `ondemand` (default) because the chip was warming up. Rerun with 1000
-measurements per mode, alternating blocks (full report: `baseline_default_clock/baseline_REPORT.md`):
+measurements per mode, alternating blocks (full report: `01_baseline_default_clock/baseline_REPORT.md`):
 
 | Scenario | Legacy median (best / worst) | Hybrid median (best / worst) | Difference |
 |---|---|---|---|
@@ -171,7 +171,7 @@ that's a heat/energy vs latency trade-off.
 Idea: keep the power-saving `ondemand` governor but raise `scaling_min_freq` from 312.5 MHz to 750 MHz, so a
 handshake no longer starts at the lowest clock. Screening of 4 settings, then a confirmation run alternating
 the default (D0) and min 750 MHz (D1) block by block, 1000 runs per mode
-(full reports: `dynamic_cpu_freq/dynamic_cpu_freq_screen_REPORT.md`, `dynamic_cpu_freq/dynamic_cpu_freq_REPORT.md`).
+(full reports: `02_dynamic_cpu_freq/dynamic_cpu_freq_screen_REPORT.md`, `02_dynamic_cpu_freq/dynamic_cpu_freq_REPORT.md`).
 
 | Scenario | Baseline: legacy, default clock | Hybrid, default clock | **Hybrid, min 750 MHz** |
 |---|---|---|---|
@@ -195,13 +195,13 @@ remains slightly slower than legacy (+0.5 ms LAN, +3–4.5 ms internet).
 | schedutil, min 750 MHz | 17.58 ms | 16.54 ms | 46.6 °C | ✅ same speed, warmer |
 | performance (fixed 1.5 GHz, 2026-11-10) | 10.66 ms | 10.32 ms | ~50–52 °C | ✅ fastest, hottest |
 
-Full reasoning and caveats: `dynamic_cpu_freq/dynamic_cpu_freq_REPORT.md`, section "RECOMMENDATION".
+Full reasoning and caveats: `02_dynamic_cpu_freq/dynamic_cpu_freq_REPORT.md`, section "RECOMMENDATION".
 Not tested: 500/625 MHz minimums, energy use.
 
 ## 12. BITMANIP (2026-11-11): RISC-V Zba/Zbb bit-manipulation extensions
 
 OpenSSL rebuilt with `-march=rv64gc_zba_zbb` (no code changes) so GCC uses the U74's single-instruction rotations
-(`rol`/`ror`) and shifted adds (`sh3add`). Full report: `bitmanip_zba_zbb/bitmanip_REPORT.md`.
+(`rol`/`ror`) and shifted adds (`sh3add`). Full report: `03_bitmanip_zba_zbb/bitmanip_REPORT.md`.
 
 Crypto at a fixed 1.5 GHz (plain → bitmanip): SHA3-256 / SHAKE-128 **+50 %**, SHA-256 +41 %, ML-KEM-768
 keygen/encaps/decaps **−19 / −13 / −14 %**, ML-DSA-44/65 verify **−15 / −16 %**; RSA, ECDSA and X25519 unchanged.
@@ -223,7 +223,7 @@ Caveat: the library then requires a CPU with Zba/Zbb.
 The classical and post-quantum halves of each hybrid step (ECDSA ‖ ML-DSA verify, X25519 ‖ ML-KEM keygen,
 X25519 ‖ ML-KEM decaps) were run one after another vs on two cores at once (persistent worker thread), 200
 iterations per case, at three clock settings and with both builds; 10,800 measurements, 0 failures.
-Full report: `multicore/multicore_feasibility_REPORT.md`.
+Full report: `04_multicore/multicore_feasibility_REPORT.md`.
 
 | Client-side crypto of one hybrid handshake | One core | Two cores | Saved |
 |---|---|---|---|
@@ -243,7 +243,7 @@ OpenSSL's hybrid KEM (key exchange). End-to-end not measured yet.
 The ML-DSA-44 signature now travels inside the TLS 1.3 Certificate message (extension `0xFE20`, signing
 SHA-256(ClientHello ‖ ServerHello)), so the board verifies it on a second core while OpenSSL verifies ECDSA.
 1000 connections per mode, own server, default clock, blocks alternating; 0 failures.
-Full report: `multicore/multicore_e2e_REPORT.md`.
+Full report: `04_multicore/multicore_e2e_REPORT.md`.
 
 | Mode (own server, LAN, default clock) | Median end-to-end | vs legacy |
 |---|---|---|
@@ -261,7 +261,7 @@ OpenSSL. Security tests passed (wrong ML-DSA key and missing signature are rejec
 
 COMBINED = min 750 MHz (approach 1) + Zba/Zbb build (approach 2) + ML-DSA on a second core in the handshake
 (approach 3), alternated block by block with BASE (= baseline setup), 1000 runs per configuration, mode and
-scenario; 8000 connections, 0 failures. Full report: `combined_all_approaches/combined_REPORT.md`.
+scenario; 8000 connections, 0 failures. Full report: `05_combined_all_approaches/combined_REPORT.md`.
 
 | Scenario | Baseline: legacy (BASE) | Hybrid, BASE | **Hybrid, COMBINED** | Hybrid COMBINED vs legacy baseline |
 |---|---|---|---|---|

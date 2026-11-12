@@ -1,7 +1,7 @@
 # Technical walkthrough: everything we did, step by step
 
 Hybrid post-quantum TLS on the StarFive VisionFive 2 (JH7110, 4 × SiFive U74 RV64GC, 1.5 GHz, Debian).
-Detailed reports and raw data for every step: `achieved_results/`. Practice questions: `presentation/study_guide/`.
+Detailed reports and raw data for every step: `results/`. Practice questions: `presentation/study_guide/`.
 
 ## The goal
 The task asked for three things:
@@ -183,10 +183,10 @@ Two things to know:
   arithmetic, and the PCIe transfer would cost about as much as the work saved. The CPU-side fixes gave more.
 
 ## Stage 11: Deliverables
-- Every approach has its own folder in `achieved_results/` with a report (`.md` + `.pdf`), raw data, statistics, logs
+- Every approach has its own folder in `results/` with a report (`.md` + `.pdf`), raw data, statistics, logs
   and scripts.
-- Also in the repository: the combined result, the migration guide (`achieved_results/SUMMARY.md`, section 7), the
-  study guide, and the slide notes (`presentation/TECH_SLIDES.pdf`).
+- Also in the repository: the combined result, the migration guide (`docs/PROJECT_SUMMARY.md`, section 7), the
+  study guide, and the slide notes (`presentation/TECHNICAL_SLIDE_NOTES.pdf`).
 
 ## Limits (say them before you're asked)
 - Hybrid authentication was only measured against our own server, because FOCAL's server currently has only an

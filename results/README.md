@@ -1,4 +1,4 @@
-# Achieved results: hybrid PQC on the StarFive VisionFive 2
+# Results: hybrid PQC on the StarFive VisionFive 2
 
 Measured results from the FOCAL "Post-Quantum Retrofit" hackathon work: legacy vs hybrid post-quantum TLS 1.3
 on a StarFive VisionFive 2 (JH7110, 4x SiFive U74 @ up to 1.5 GHz), OpenSSL 3.5.9.
@@ -12,23 +12,23 @@ Two scenarios are measured throughout:
 2. **Own server** on the local network, end-to-end time including full hybrid authentication
 
 All numbers on one page (best / median / worst for every approach):
-**[`../results/FINAL_COMPARISON_REPORT.md`](../results/FINAL_COMPARISON_REPORT.md)**.
-Full story: **[SUMMARY.md](SUMMARY.md)** ([PDF](SUMMARY.pdf)); sections 10–14 cover the results in this folder.
+**[`FINAL_COMPARISON_REPORT.md`](FINAL_COMPARISON_REPORT.md)** ([PDF](FINAL_COMPARISON_REPORT.pdf)).
+Full story: **[PROJECT_SUMMARY.md](../docs/PROJECT_SUMMARY.md)** ([PDF](../docs/PROJECT_SUMMARY.pdf)); sections 10–14 cover the results in this folder.
+Source code: [`../src/`](../src/); analysis scripts: [`../tools/`](../tools/).
 
 ## Folder layout: one folder per approach
 Each approach is self-contained: a detailed report (`.md` + `.pdf`), all raw measurements, statistics, logs and the
 scripts used, so each can be written up on its own.
 
 ```
-achieved_results/
-├── README.md / README.pdf          this index
-├── SUMMARY.md / SUMMARY.pdf        overall summary (sections 10-14 = these approaches)
-├── baseline_default_clock/         BASELINE: default CPU setting, legacy vs hybrid
-├── dynamic_cpu_freq/               APPROACH 1: raise the minimum CPU clock
-├── bitmanip_zba_zbb/               APPROACH 2: RISC-V Zba/Zbb bit-manipulation extensions
-├── multicore/                      APPROACH 3: classical and PQ halves on separate CPU cores
-├── combined_all_approaches/        ALL THREE APPROACHES COMBINED vs the baseline (final result)
-└── tools/                          source code of clients, server, benchmarks and analysis scripts
+results/
+├── README.md / .pdf                     this index
+├── FINAL_COMPARISON_REPORT.md / .pdf    all numbers on one page (best / median / worst)
+├── 01_baseline_default_clock/           BASELINE: default CPU setting, legacy vs hybrid
+├── 02_dynamic_cpu_freq/                 APPROACH 1: raise the minimum CPU clock
+├── 03_bitmanip_zba_zbb/                 APPROACH 2: RISC-V Zba/Zbb bit-manipulation extensions
+├── 04_multicore/                        APPROACH 3: classical and PQ halves on separate CPU cores
+└── 05_combined_all_approaches/          ALL APPROACHES COMBINED vs the baseline (final result)
 ```
 
 ## Final result: all three approaches combined
@@ -43,7 +43,7 @@ COMBINED = minimum CPU clock 750 MHz + Zba/Zbb OpenSSL build + ML-DSA verified o
 handshake; alternated block by block with the baseline setup, 1000 runs each, 0 failures. Against FOCAL's server
 only the first two apply (it uses RSA authentication, so there's no ML-DSA signature to verify). **The "no increase in
 end-to-end latency" target is met with margin, with software and settings only.**
-See [`combined_all_approaches/combined_REPORT.md`](combined_all_approaches/combined_REPORT.md).
+See [`05_combined_all_approaches/combined_REPORT.md`](05_combined_all_approaches/combined_REPORT.md).
 
 ## Results per approach
 
@@ -75,12 +75,12 @@ blocks)** at the default clock, more than halving the gap to legacy (+6.5 → +2
 
 ## Files
 
-### `SUMMARY.md`
+### [`../docs/PROJECT_SUMMARY.md`](../docs/PROJECT_SUMMARY.md)
 Full project summary: setup, benchmarks, bottleneck analysis, migration guide, limitations.
 Section 10 = baseline at the default CPU clock; section 11 = dynamic CPU frequency, including the recommended setting.
 Sections 1–9 refer to earlier raw data that isn't included in this folder.
 
-### `baseline_default_clock/`: BASELINE (default CPU setting: `ondemand`, min 312.5 MHz)
+### `01_baseline_default_clock/`: BASELINE (default CPU setting: `ondemand`, min 312.5 MHz)
 | File | Contents |
 |---|---|
 | `baseline_REPORT.md` / `.pdf` | Report: legacy vs hybrid, 1000 runs per mode, both scenarios, best / median / percentiles / worst |
@@ -89,7 +89,7 @@ Sections 1–9 refer to earlier raw data that isn't included in this folder.
 | `baseline_bench_1000.log` | Per-block log: governor, temperature, negotiated group / ML-DSA verification checks |
 | `scripts/bench_1000.sh` | Benchmark script used (runs on the board) |
 
-### `dynamic_cpu_freq/`: DYNAMIC CPU FREQ (raise only the minimum CPU clock)
+### `02_dynamic_cpu_freq/`: DYNAMIC CPU FREQ (raise only the minimum CPU clock)
 | File | Contents |
 |---|---|
 | `dynamic_cpu_freq_REPORT.md` / `.pdf` | **Final report**: default vs `ondemand` + min 750 MHz, alternated block by block, 1000 runs per mode; includes the **RECOMMENDATION** section comparing all settings |
@@ -104,7 +104,7 @@ Sections 1–9 refer to earlier raw data that isn't included in this folder.
 | `dynamic_cpu_freq_screen.log` | Screening run per-config log and checks |
 | `scripts/bench_dyn.sh`, `scripts/bench_cfg_ab.sh` | Screening and alternating confirmation scripts (need sudo; restore the default CPU setting at the end) |
 
-### `bitmanip_zba_zbb/`: BITMANIP (RISC-V Zba/Zbb bit-manipulation extensions)
+### `03_bitmanip_zba_zbb/`: BITMANIP (RISC-V Zba/Zbb bit-manipulation extensions)
 | File | Contents |
 |---|---|
 | `bitmanip_REPORT.md` / `.pdf` | **Report**: plain `rv64gc` vs `-march=rv64gc_zba_zbb` OpenSSL build; micro-benchmarks and 1000-run end-to-end comparison vs the baseline |
@@ -115,7 +115,7 @@ Sections 1–9 refer to earlier raw data that isn't included in this folder.
 | `bitmanip_e2e.log` | Per-block log, library linkage of each binary, negotiated group / ML-DSA verification checks |
 | `scripts/bench_bitmanip.sh`, `scripts/micro_bitmanip.sh`, `scripts/micro_fixed.sh` | End-to-end and micro-benchmark scripts |
 
-### `multicore/`: MULTICORE (classical and PQ halves on separate CPU cores)
+### `04_multicore/`: MULTICORE (classical and PQ halves on separate CPU cores)
 | File | Contents |
 |---|---|
 | `multicore_feasibility_REPORT.md` / `.pdf` | **Report**: one core vs two cores (new thread / persistent worker), 3 pairs, 3 clock settings x 2 builds, findings and limits |
@@ -129,7 +129,7 @@ Sections 1–9 refer to earlier raw data that isn't included in this folder.
 | `multicore_e2e.log` | Run log: per-block verification checks, failures (0), temperature |
 | `scripts/bench_multicore_e2e.sh` | End-to-end benchmark script (no sudo needed) |
 
-### `combined_all_approaches/`: ALL THREE APPROACHES COMBINED (final result)
+### `05_combined_all_approaches/`: ALL THREE APPROACHES COMBINED (final result)
 | File | Contents |
 |---|---|
 | `combined_REPORT.md` / `.pdf` | **Report**: BASE (baseline setup) vs COMBINED (min 750 MHz + bitmanip + ML-DSA on a 2nd core), alternated block by block, 1000 runs per mode, both scenarios; target check, temperatures, how the approaches add up |
@@ -139,16 +139,16 @@ Sections 1–9 refer to earlier raw data that isn't included in this folder.
 | `combined.log` | Run log: per-block verification checks, failures (0), temperatures |
 | `scripts/bench_combined.sh` | Benchmark script (needs sudo; restores the default CPU setting) |
 
-### `tools/`: source code
+### Source code ([`../src/`](../src/)) and analysis scripts ([`../tools/`](../tools/))
 | File | What |
 |---|---|
-| `hybrid_server.c` | TLS 1.3 test server: RSA-3072 for legacy clients; ECDSA P-256 + ML-DSA-44/65 dual signature for hybrid clients, either bound to the TLS exporter (v1) or in a TLS 1.3 Certificate extension over the hello messages (v2) |
-| `hybrid_client.c` | Benchmark client: pinned certificate + pinned ML-DSA key, end-to-end timing, `RAW=1` per-connection output, `TRACE=1` handshake timeline; options `certext` (v2) and `par` (verify ML-DSA on a second core) |
-| `pqc_client.c` | Key-exchange client for the hackathon server (IPv4/IPv6, selectable group) |
-| `sigbench.c` | Signature micro-benchmark (RSA, ECDSA, ML-DSA) |
-| `parverify.c` | Multicore feasibility test: classical and PQ halves one after another vs on two cores |
-| `analyze_1000.py`, `analyze_dyn.py`, `analyze_pair.py`, `analyze_multicore.py`, `analyze_mc_e2e.py` | Statistics used for the reports |
-| `md2pdf.py` | Markdown to PDF conversion used for the PDFs |
+| `src/hybrid_server.c` | TLS 1.3 test server: RSA-3072 for legacy clients; ECDSA P-256 + ML-DSA-44/65 dual signature for hybrid clients, either bound to the TLS exporter (v1) or in a TLS 1.3 Certificate extension over the hello messages (v2) |
+| `src/hybrid_client.c` | Benchmark client: pinned certificate + pinned ML-DSA key, end-to-end timing, `RAW=1` per-connection output, `TRACE=1` handshake timeline; options `certext` (v2) and `par` (verify ML-DSA on a second core) |
+| `src/pqc_client.c` | Key-exchange client for the hackathon server (IPv4/IPv6, selectable group) |
+| `src/sigbench.c` | Signature micro-benchmark (RSA, ECDSA, ML-DSA) |
+| `src/parverify.c` | Multicore feasibility test: classical and PQ halves one after another vs on two cores |
+| `tools/analyze_1000.py`, `analyze_dyn.py`, `analyze_pair.py`, `analyze_multicore.py`, `analyze_mc_e2e.py` | Statistics used for the reports |
+| `tools/md2pdf.py` | Markdown to PDF conversion used for the PDFs |
 
 ## Method notes
 - Every individual measurement is recorded; modes (and, in the confirmation run, CPU settings) alternate in

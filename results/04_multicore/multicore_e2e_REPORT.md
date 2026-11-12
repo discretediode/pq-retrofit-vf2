@@ -41,8 +41,8 @@ from the effect of the second core.
 | Wrong pinned certificate | handshake fails (unchanged from v1) |
 
 ## Method
-- Own server on the Mac (`tools/hybrid_server.c`, now also sends the v2 extension), client on the board
-  (`tools/hybrid_client.c`, options `certext` and `par`).
+- Own server on the Mac (`src/hybrid_server.c`, now also sends the v2 extension), client on the board
+  (`src/hybrid_client.c`, options `certext` and `par`).
 - 4 modes, **1000 connections each**: 20 blocks x 50 runs, mode order rotating every block, so all modes see the same
   network conditions. 4000 connections, **0 failures**, ML-DSA verification confirmed in every hybrid block.
 - Temperature 44.9 → 46.1 °C over the run.
