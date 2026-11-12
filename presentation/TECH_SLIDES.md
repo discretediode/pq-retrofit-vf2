@@ -80,7 +80,8 @@ That's what our migration guide and our company are about."
 - **Total ≈ 2 min**, leaving 1–2 min for the problem and the company. If time is short, drop slide 2's table and keep
   only the chart.
 - **Show few numbers:** 28 → 14.5 ms and "−31 %" are the ones to remember.
-- **If asked about limits:** hybrid authentication was measured against our own server, because the hackathon server
-  only supports RSA. The ML-DSA signature uses a custom TLS extension; the production path is composite ML-DSA
-  certificates. Energy wasn't measured; temperature is the proxy.
+- **If asked about limits:** FOCAL's server supports the hybrid key exchange (we used it), but its certificate is
+  RSA-3072 only and it refuses ECDSA and ML-DSA signatures, so hybrid authentication was measured against our own
+  server, with the same setup for legacy and hybrid. The ML-DSA signature uses a custom TLS extension; the production
+  path is standard ML-DSA or composite certificates. Energy wasn't measured; temperature is the proxy.
 - More detail and practice questions: `achieved_results/study_guide/`.

@@ -13,7 +13,7 @@ Combines the three approaches tested separately (see their own folders) and comp
 | Hybrid authentication (own server) | v1: ML-DSA-44 after the handshake, one core | **approach 3:** v2: ML-DSA-44 in the TLS Certificate, verified on a **second core** in parallel with ECDSA |
 | Legacy | X25519 + RSA-3072 | X25519 + RSA-3072 (same clock and build as COMBINED) |
 
-Against the hackathon server only approaches 1 and 2 apply: the server authenticates with RSA-3072 only, so the
+Against the hackathon server only approaches 1 and 2 apply: FOCAL's server supports the hybrid key exchange but authenticates with an RSA-3072 certificate only (ECDSA and ML-DSA signatures are refused), so the
 hybrid authentication (and with it approach 3) can't be used there. Hybrid there means X25519MLKEM768 key exchange.
 
 ## Method
@@ -108,7 +108,7 @@ raising the minimum clock removes most of the slowdown, and the other two then s
    compiler flag and a different place/core for the ML-DSA check.
 
 ## Limits
-- Hybrid authentication was measured against our own server; the hackathon server only supports RSA-3072.
+- Hybrid authentication was measured against our own server; FOCAL's hackathon server supports the hybrid key exchange but has only an RSA-3072 certificate.
 - The v2 ML-DSA signature uses a private-use TLS extension (`0xFE20`), not a standard; see `multicore_e2e_REPORT.md`.
 - The bitmanip build runs only on CPUs with Zba/Zbb.
 - The key exchange halves (X25519 ‖ ML-KEM) are still computed one after another inside OpenSSL (possible further

@@ -87,7 +87,7 @@ Findings:
 
 ## 5. Hybrid key exchange against the real hackathon server
 
-Server `[2a0f:7cc7:7cc7:7c40::94ad]:443` (RSA-3072, only RSA signatures accepted), `pqc_client`, 50 runs each:
+Server `[2a0f:7cc7:7cc7:7c40::94ad]:443` (supports hybrid key exchange; RSA-3072 certificate, only RSA signatures accepted; re-tested 2026-11-12: ECDSA and ML-DSA signatures refused), `pqc_client`, 50 runs each:
 
 | CPU governor | X25519 (legacy) median | X25519MLKEM768 (hybrid-pqc) median |
 |---|---|---|
@@ -113,7 +113,7 @@ dominates, and hybrid key exchange adds about +1–5 ms.
 1. **Upgrade the TLS library first.** Debian images for this board ship OpenSSL 3.0.9 with no ML-KEM or ML-DSA;
    OpenSSL 3.5 LTS has both built in. Install it to a separate prefix with an rpath; don't replace the system libssl.
    Building takes about 30–40 minutes on the board.
-2. **Check the server.** Hybrid authentication needs server support; the hackathon server only offers RSA-3072.
+2. **Check the server.** Hybrid authentication needs server support; FOCAL's hackathon server supports hybrid key exchange but only has an RSA-3072 certificate.
 3. **Check the CPU governor.** `ondemand` leaves short TLS bursts running at 375 MHz.
 4. **Build OpenSSL with `enable-ec_nistp_64_gcc_128` on 64-bit RISC-V.** It makes P-256 several times faster.
 5. **Pick matching security levels.** P-256 + ML-DSA-44 (the pairing used in the IETF composite-signature draft) is
@@ -126,7 +126,7 @@ dominates, and hybrid key exchange adds about +1–5 ms.
 
 ## 8. Limitations (be upfront about these)
 
-- The hybrid-authentication server is our own (on the Mac), not the hackathon server, which cannot do PQ signatures.
+- The hybrid-authentication server is our own (on the Mac), not FOCAL's hackathon server: it supports the hybrid key exchange, but its certificate is RSA-3072 only and it refuses ECDSA and ML-DSA signatures (re-tested 2026-11-12).
   Baseline and hybrid were measured against the same server for fairness.
 - Local network only (~1 ms RTT) for the authentication benchmarks; over the internet both would include ~40–50 ms RTT.
 - The dual-signature scheme is a custom construction, not a standardised TLS signature algorithm; certificates and the

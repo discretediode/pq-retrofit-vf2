@@ -34,7 +34,18 @@ The task asked for three things:
   own connection time. Removing it gave the real numbers. That's why all later tests used large, alternating runs.
 
 ## Stage 3: Hybrid authentication
-**The problem:** the hackathon server only signs with RSA-3072, so hybrid authentication can't be tested against it.
+**The problem:** FOCAL's hackathon server supports the hybrid **key exchange**, but for **authentication** it only has
+an RSA-3072 certificate. We re-tested this on 2026-11-12:
+
+| Asked FOCAL's server for | Answer |
+|---|---|
+| Hybrid key exchange `X25519MLKEM768` | ✅ accepted (`"handshake_method":"hybrid-pqc"`) |
+| Certificate | RSA-3072, `CN=focalhackathon` |
+| RSA signature | ✅ accepted |
+| ECDSA P-256, ML-DSA-44/65/87, Ed25519 signatures | ❌ refused (TLS alert "handshake failure") |
+
+So hybrid authentication can't be shown against FOCAL's server today; this is a property of their endpoint, not of our
+client.
 
 **The solution:** our own TLS server, **`hybrid_server`** (C, running on the Mac). It holds:
 - an **RSA-3072 certificate**, for legacy clients (the baseline), and
@@ -178,7 +189,9 @@ Two things to know:
   study guide, and the slide notes (`presentation/TECH_SLIDES.pdf`).
 
 ## Limits (say them before you're asked)
-- Hybrid authentication was only measured against our own server.
+- Hybrid authentication was only measured against our own server, because FOCAL's server currently has only an
+  RSA-3072 certificate (it does support the hybrid key exchange). If FOCAL adds an ML-DSA certificate, OpenSSL 3.5 on
+  the board can use it directly in TLS, without our custom extension.
 - `0xFE20` is a custom extension. The production path is composite ML-DSA certificates.
 - Keys are pinned instead of issued through a certificate authority.
 - The bitmanip build needs Zba/Zbb.

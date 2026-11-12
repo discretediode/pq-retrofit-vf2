@@ -269,7 +269,7 @@ sequenceDiagram
   <h3>2. Hybrid key exchange</h3>
   <p>The client asks for the TLS group <code>X25519MLKEM768</code>. Against the hackathon server, its reply <code>"handshake_method":"hybrid-pqc"</code> confirmed it.</p>
   <h3>3. Hybrid authentication, two versions</h3>
-  <p>The hackathon server only signs with RSA, so you wrote your own test server (on the Mac). It has an RSA certificate for legacy clients and an ECDSA certificate plus ML-DSA keys for hybrid clients. Both modes were measured against this same server, so the comparison is fair.</p>
+  <p>FOCAL's hackathon server supports the hybrid key exchange, but its certificate is RSA-3072 only: re-tested on 12 Nov, it refuses ECDSA and ML-DSA signatures. So you wrote your own test server (on the Mac). It has an RSA certificate for legacy clients and an ECDSA certificate plus ML-DSA keys for hybrid clients. Both modes were measured against this same server, so the comparison is fair.</p>
   <ul>
     <li><strong>v1:</strong> after the handshake, the server signs a value unique to this connection (the TLS exporter) with ML-DSA and sends it with the first HTTP response. It works and needs no extra round trip, but the check can only start after the handshake, so it adds time.</li>
     <li><strong>v2 (final):</strong> the ML-DSA signature travels <em>inside the Certificate message</em> as a custom TLS extension (<code>0xFE20</code>). It signs a hash of the ClientHello and ServerHello, which contain both sides' random values and key shares, so it can't be replayed in another connection. Because it arrives together with the ECDSA signature, the board checks <strong>both at the same time on two cores</strong>.</li>
@@ -385,7 +385,7 @@ sequenceDiagram
   <p class="eyebrow">Be upfront</p>
   <h2>Limits (say these before they ask)</h2>
   <ul>
-    <li><strong>Hybrid authentication only against your own server.</strong> The hackathon server only signs with RSA-3072, so against it only the key exchange is hybrid.</li>
+    <li><strong>Hybrid authentication only against your own server.</strong> FOCAL's server supports the hybrid key exchange, but its certificate is RSA-3072 only and it refuses ECDSA and ML-DSA signatures, so against it only the key exchange is hybrid. If FOCAL adds an ML-DSA certificate, OpenSSL 3.5 can use it directly.</li>
     <li><strong>The ML-DSA signature uses a custom TLS extension,</strong> not a standard. In production you'd use standard-track options: composite ML-DSA certificates (IETF LAMPS draft), pure ML-DSA certificates, or "Catalyst" certificates with an alternative key.</li>
     <li><strong>Pinned keys, not a PKI.</strong> That's fine for a closed device fleet, but a real rollout needs CA-issued post-quantum certificates.</li>
     <li><strong>The bitmanip build only runs on CPUs with Zba/Zbb.</strong></li>
